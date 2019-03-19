@@ -1,23 +1,57 @@
 var express = require("express");
 var app = express();
 var db = require("./db");
-var cors = require('cors')
-var moment = require('moment')
+var cors = require("cors");
+var moment = require("moment");
 
-app.use(cors({
-  "origin": "*",
-  "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-  "preflightContinue": false,
-  "optionsSuccessStatus": 204
-}))
+app.use(
+  cors({
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+  })
+);
 const realtimeQuery =
   "select P.pre_id,P.s_id,P.ps_time,P.duration,P.numberOfOper,O.op_time,O.o_id,OP.o_type,OP.parttime from dbo.psrel P LEFT JOIN dbo.oprel O ON P.pre_id = O.pre_id and P.s_id = O.s_id LEFT JOIN dbo.operator OP ON O.o_id = OP.o_id WHERE CONVERT(varchar(11),ps_time)=CONVERT(varchar(11),getdate()) Order by ps_time  DESC;";
 const dateQuery = date => {
-  if(date.getDate()>= 10) return `select P.pre_id,P.s_id,P.ps_time,P.duration,P.numberOfOper,O.op_time,O.o_id,OP.o_type,OP.parttime from dbo.psrel P LEFT JOIN dbo.oprel O ON P.pre_id = O.pre_id and P.s_id = O.s_id LEFT JOIN dbo.operator OP ON O.o_id = OP.o_id WHERE CONVERT(varchar(11),ps_time)=CONVERT(varchar(11),'${moment(new Date('2019-02-25T09:36:44.198Z')).format('MMM DD YYYY')}') Order by ps_time  DESC;`
-  else return `select P.pre_id,P.s_id,P.ps_time,P.duration,P.numberOfOper,O.op_time,O.o_id,OP.o_type,OP.parttime from dbo.psrel P LEFT JOIN dbo.oprel O ON P.pre_id = O.pre_id and P.s_id = O.s_id LEFT JOIN dbo.operator OP ON O.o_id = OP.o_id WHERE CONVERT(varchar(11),ps_time)=CONVERT(varchar(11),'${moment(new Date('2019-05-06T09:36:44.198Z')).format('MMM  DD YYYY')}') Order by ps_time  DESC;`
-}
-  
-const monthQuery = date => ``
+  if (date.getDate() >= 10)
+    return `select P.pre_id,P.s_id,P.ps_time,P.duration,P.numberOfOper,O.op_time,O.o_id,OP.o_type,OP.parttime from dbo.psrel P LEFT JOIN dbo.oprel O ON P.pre_id = O.pre_id and P.s_id = O.s_id LEFT JOIN dbo.operator OP ON O.o_id = OP.o_id WHERE CONVERT(varchar(11),ps_time)=CONVERT(varchar(11),'${moment(
+      new Date("2019-02-25T09:36:44.198Z")
+    ).format("MMM DD YYYY")}') Order by ps_time  DESC;`;
+  else
+    return `select P.pre_id,P.s_id,P.ps_time,P.duration,P.numberOfOper,O.op_time,O.o_id,OP.o_type,OP.parttime from dbo.psrel P LEFT JOIN dbo.oprel O ON P.pre_id = O.pre_id and P.s_id = O.s_id LEFT JOIN dbo.operator OP ON O.o_id = OP.o_id WHERE CONVERT(varchar(11),ps_time)=CONVERT(varchar(11),'${moment(
+      new Date("2019-05-06T09:36:44.198Z")
+    ).format("MMM  DD YYYY")}') Order by ps_time  DESC;`;
+};
+
+const Time = {
+  0: 0,
+  1: 0,
+  2: 0,
+  3: 0,
+  4: 0,
+  5: 0,
+  6: 0,
+  7: 0,
+  8: 0,
+  9: 0,
+  10: 0,
+  11: 0,
+  12: 0,
+  13: 0,
+  14: 0,
+  15: 0,
+  16: 0,
+  17: 0,
+  18: 0,
+  19: 0,
+  20: 0,
+  21: 0,
+  22: 0,
+  23: 0
+};
+const monthQuery = date => ``;
 const extractData = data => {
   let pick_q = [];
   let pick = [];
@@ -80,39 +114,26 @@ const extractData = data => {
       parttime
     } = prescription;
     if (s_id == 10 || s_id == 20 || s_id == 30) {
-      const now = moment().add(7,"hours")
-      prescription['time'] = now.diff(moment(prescription.ps_time), 'seconds');
+      const now = moment().add(7, "hours");
+      prescription["time"] = now.diff(moment(prescription.ps_time), "seconds");
       pick_q.push(prescription);
-    }
-    else if (s_id == 11 || s_id == 21 || s_id == 31) {
+    } else if (s_id == 11 || s_id == 21 || s_id == 31) {
       pick.push(prescription);
-    }
-
-    else if (s_id == 12) {
-      const now = moment().add(7,"hours")
-      prescription['time'] = now.diff(moment(prescription.ps_time), 'seconds')
+    } else if (s_id == 12) {
+      const now = moment().add(7, "hours");
+      prescription["time"] = now.diff(moment(prescription.ps_time), "seconds");
       decoct_q.push(prescription);
-    }
-
-    else if (s_id == 13) {
+    } else if (s_id == 13) {
       decoct.push(prescription);
-    }
-
-    else if (s_id == 22 || s_id == 14) {
-      const now = moment().add(7,"hours")
-      prescription['time'] = now.diff(moment(prescription.ps_time), 'seconds')
+    } else if (s_id == 22 || s_id == 14) {
+      const now = moment().add(7, "hours");
+      prescription["time"] = now.diff(moment(prescription.ps_time), "seconds");
       dispense_q.push(prescription);
-    }
-
-    else if (s_id == 32 || s_id == 15 || s_id == 23 || s_id == 40) {
+    } else if (s_id == 32 || s_id == 15 || s_id == 23 || s_id == 40) {
       dispense.push(prescription);
-    }
-
-    else if (s_id == 16 || s_id == 24 || s_id == 33 || s_id == 41) {
+    } else if (s_id == 16 || s_id == 24 || s_id == 33 || s_id == 41) {
       finish.push(prescription);
-    }
-
-    else other.push(prescription)
+    } else other.push(prescription);
   });
 
   const result = {
@@ -140,7 +161,6 @@ const extractData = data => {
   return result;
 };
 
-
 app.get("/realtime", function(req, res) {
   const request = db.request();
   request.query(realtimeQuery, function(err, result) {
@@ -153,49 +173,51 @@ app.get("/realtime", function(req, res) {
   });
 });
 
-const dailyPicking = (data) => {
-  const timeDict = {};
-  const breakLimit = {};
-  const avgTime = {};
+const dailyPicking = data => {
+  const timeDict = { ...Time };
+  const breakLimit = { ...Time };
+  const avgTime = { ...Time };
 
   data.forEach(pre => {
-    if(pre.s_id == 10 || pre.s_id == 20 || pre.s_id == 30){
-      console.log(pre.ps_time,new Date(pre.ps_time).getMinutes(),new Date(pre.ps_time).getHours()-7);
-      const temp = new Date(pre.ps_time)
-      const h = temp.getHours()-7
-      const m = temp.getMinutes()
-      const duration = pre.duration
-      if (avgTime[h]=== undefined) {
+    if (pre.s_id == 10 || pre.s_id == 20 || pre.s_id == 30) {
+      console.log(
+        pre.ps_time,
+        new Date(pre.ps_time).getMinutes(),
+        new Date(pre.ps_time).getHours() - 7
+      );
+      const temp = new Date(pre.ps_time);
+      const h = temp.getHours() - 7;
+      const m = temp.getMinutes();
+      const duration = pre.duration;
+      if (avgTime[h] === 0) {
         avgTime[h] = {
           totalTime: duration,
           num: 1
-        }
+        };
+      } else {
+        avgTime[h].totalTime += duration;
+        avgTime[h].num += 1;
       }
-      else{
-        avgTime[h].totalTime += duration
-        avgTime[h].num += 1
+      if (duration > 40) {
+        breakLimit[h] += 1;
       }
-      if(duration > 40){
-        breakLimit[h] === undefined ? breakLimit[h] = 1 : breakLimit[h] += 1;
-      }
-      if(timeDict[h] === undefined)timeDict[h] = 1;
+      if (timeDict[h] === undefined) timeDict[h] = 1;
       else timeDict[h] += 1;
-      if(m + duration >= 60) {
-        for(let i = 1 ;i <= Math.floor((m+duration)/60);i++){
-          timeDict[h + i] ++;
+      if (m + duration >= 60) {
+        for (let i = 1; i <= Math.floor((m + duration) / 60); i++) {
+          timeDict[h + 1]++;
         }
       }
     }
-  })
+  });
 
   return {
     timeDict,
     breakLimit,
     avgTime
-
-  }
-}
-app.get('/dailyPicking', function (req, res) {
+  };
+};
+app.get("/dailyPicking", function(req, res) {
   const request = db.request();
   request.query(dateQuery(new Date()), function(err, result) {
     // if (err) return next(err);
@@ -205,27 +227,147 @@ app.get('/dailyPicking', function (req, res) {
     const dailyPickingData = dailyPicking(data);
     // // console.log(realTimeData);
     // res.send(realTimeData);
-    res.send(dailyPickingData)
+    res.send(dailyPickingData);
   });
-})
+});
 
+const dailyDecocting = data => {
+  const timeDict = { ...Time };
+  const breakLimit = { ...Time };
+  const avgTime = { ...Time };
 
-app.get('/overallProcess', function (req, res) {
+  data.forEach(pre => {
+    if (pre.s_id == 12) {
+      // console.log(pre);
+      console.log(
+        pre.ps_time,
+        new Date(pre.ps_time).getMinutes(),
+        new Date(pre.ps_time).getHours() - 7
+      );
+      const temp = new Date(pre.ps_time);
+      const h = temp.getHours() - 7;
+      const m = temp.getMinutes();
+      const duration = pre.duration;
+      if (avgTime[h] === 0) {
+        avgTime[h] = {
+          totalTime: duration,
+          num: 1
+        };
+      } else {
+        avgTime[h].totalTime += duration;
+        avgTime[h].num += 1;
+      }
+      if (duration > 40) {
+        console.log("earth", duration);
+        breakLimit[h] += 1;
+      }
+      if (timeDict[h] === undefined) timeDict[h] = 1;
+      else timeDict[h] += 1;
+      if (m + duration >= 60) {
+        for (
+          let i = 1;
+          i <= Math.floor((m + duration) / 60) && h + i <= 23;
+          i++
+        ) {
+          timeDict[h + 1]++;
+        }
+      }
+    }
+  });
+
+  return {
+    timeDict,
+    breakLimit,
+    avgTime
+  };
+};
+
+app.get("/dailyDecocting", function(req, res) {
   const request = db.request();
   request.query(dateQuery(new Date()), function(err, result) {
     // if (err) return next(err);
 
     var data = result.recordset;
-    console.log(data);
+    // console.log(data);
+    const dailyDecoctingData = dailyDecocting(data);
+    // // console.log(realTimeData);
+    // res.send(realTimeData);
+    res.send(dailyDecoctingData);
+  });
+});
+
+const dailyDispense = data => {
+  const timeDict = { ...Time };
+  const breakLimit = { ...Time };
+  const avgTime = { ...Time };
+
+  data.forEach(pre => {
+    if (pre.s_id == 14 || pre.s_id == 22) {
+      // console.log(pre);
+      console.log(
+        pre.ps_time,
+        new Date(pre.ps_time).getMinutes(),
+        new Date(pre.ps_time).getHours() - 7
+      );
+      const temp = new Date(pre.ps_time);
+      const h = temp.getHours() - 7;
+      const m = temp.getMinutes();
+      const duration = pre.duration;
+      if (avgTime[h] === 0) {
+        avgTime[h] = {
+          totalTime: duration,
+          num: 1
+        };
+      } else {
+        avgTime[h].totalTime += duration;
+        avgTime[h].num += 1;
+      }
+      if (duration > 40) {
+        breakLimit[h] += 1;
+      }
+      if (timeDict[h] === undefined) timeDict[h] = 1;
+      else timeDict[h] += 1;
+      if (m + duration >= 60) {
+        for (let i = 1; i <= Math.floor((m + duration) / 60); i++) {
+          timeDict[h + 1]++;
+        }
+      }
+    }
+  });
+
+  return {
+    timeDict,
+    breakLimit,
+    avgTime
+  };
+};
+
+app.get("/dailyDispense", function(req, res) {
+  const request = db.request();
+  request.query(dateQuery(new Date()), function(err, result) {
+    if (err) return next(err);
+
+    var data = result.recordset;
+
+    const dailyDispenseData = dailyDispense(data);
+
+    res.send(dailyDispenseData);
+  });
+});
+
+app.get("/overallProcess", function(req, res) {
+  const request = db.request();
+  request.query(dateQuery(new Date()), function(err, result) {
+    // if (err) return next(err);
+
+    var data = result.recordset;
+    // console.log(data);
     const dailyPickingData = dailyPicking(data);
     // // console.log(realTimeData);
     // res.send(realTimeData);
-    res.send(dailyPickingData)
+    res.send(dailyPickingData);
   });
-})
-
-
-
+});
 
 var server = app.listen(5000, function() {
   console.log("Server is running..");
