@@ -27,6 +27,13 @@ const dateQuery = date => {
 const monthQuery = date => {
   return `select P.pre_id,P.s_id,P.ps_time,P.duration,P.numberOfOper,O.op_time,O.o_id,OP.o_type,OP.parttime from dbo.psrel P LEFT JOIN dbo.oprel O ON P.pre_id = O.pre_id and P.s_id = O.s_id LEFT JOIN dbo.operator OP ON O.o_id = OP.o_id WHERE DATEPART(mm,ps_time)=${date.getMonth()+1} and DATEPART(yy,ps_time)=${date.getUTCFullYear()} Order by ps_time  ASC;`
 }
+// const threeMonthQuery = date => {
+//   const m1 = moment(date)
+//   const m2 = m1.add(1,'M');
+//   const m3 = m2.add(2,'M');
+//   console.log(m1,m2,m3);
+//   // return `select P.pre_id,P.s_id,P.ps_time,P.duration,P.numberOfOper,O.op_time,O.o_id,OP.o_type,OP.parttime from dbo.psrel P LEFT JOIN dbo.oprel O ON P.pre_id = O.pre_id and P.s_id = O.s_id LEFT JOIN dbo.operator OP ON O.o_id = OP.o_id WHERE DATEPART(mm,ps_time)=${date.getMonth()+1} and DATEPART(yy,ps_time)=${date.getUTCFullYear()} Order by ps_time  ASC;`
+// }
 const Time = {
   0: 0,
   1: 0,
@@ -445,6 +452,7 @@ const monthlyDecocting = data => {
   
   dateDict = {...monthDict}
   breakLimit = {...monthDict}
+  avgDate = {...monthDict}
   
   data.forEach(pre => {
     if (pre.s_id == 12){
@@ -492,6 +500,7 @@ const monthlyDispense = data => {
   
   dateDict = {...monthDict}
   breakLimit = {...monthDict}
+  avgDate = {...monthDict}
   
   data.forEach(pre => {
     if (pre.s_id == 14 || pre.s_id == 22){
@@ -533,6 +542,25 @@ app.get("/monthlyDispense", function (req, res) {
     res.send(monthlyDispenseData);
   });
 })
+
+
+
+app.get("/threeMonthlyPicking", function (req, res) {
+  console.log(threeMonthQuery(new Date()));
+  res.send(12)
+  // const request = db.request();
+  // request.query(monthQuery(new Date()), function(err, result) {
+  //   if (err) return next(err);
+
+  //   var data = result.recordset;
+
+  //   const monthlyDispenseData = monthlyDispense(data);
+
+  //   res.send(monthlyDispenseData);
+  // });
+})
+
+
 
 
 
