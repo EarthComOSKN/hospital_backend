@@ -188,8 +188,8 @@ const dailyPicking = data => {
         new Date(pre.ps_time).getHours() - 7
       );
       const temp = new Date(pre.ps_time);
-      const h = temp.getHours() - 7;
-      const m = temp.getMinutes();
+      const h = temp.getUTCHours();
+      const m = temp.getUTCMinutes();
       const duration = pre.duration;
       if (avgTime[h] === 0) {
         avgTime[h] = {
@@ -247,8 +247,8 @@ const dailyDecocting = data => {
         new Date(pre.ps_time).getHours() - 7
       );
       const temp = new Date(pre.ps_time);
-      const h = temp.getHours() - 7;
-      const m = temp.getMinutes();
+      const h = temp.getUTCHours();
+      const m = temp.getUTCMinutes();
       const duration = pre.duration;
       if (avgTime[h] === 0) {
         avgTime[h] = {
@@ -312,8 +312,8 @@ const dailyDispense = data => {
       //   new Date(pre.ps_time).getHours() - 7
       // );
       const temp = new Date(pre.ps_time);
-      const h = temp.getHours() - 7;
-      const m = temp.getMinutes();
+      const h = temp.getUTCHours();
+      const m = temp.getUTCMinutes();
       const duration = pre.duration;
       if (avgTime[h] === 0) {
         avgTime[h] = {
@@ -321,6 +321,8 @@ const dailyDispense = data => {
           num: 1
         };
       } else {
+        console.log(pre);
+        console.log(temp);
         avgTime[h].totalTime += duration;
         avgTime[h].num += 1;
       }
@@ -330,7 +332,7 @@ const dailyDispense = data => {
       if (timeDict[h] === undefined) timeDict[h] = 1;
       else timeDict[h] += 1;
       if (m + duration >= 60) {
-        for (let i = 1; i <= Math.floor((m + duration) / 60); i++) {
+        for (let i = 1; i <= Math.floor((m + duration) / 60) && h + i <= 23; i++) {
           timeDict[h + 1]++;
         }
       }
@@ -464,7 +466,7 @@ const monthlyDecocting = data => {
     }
   })
 
-  return {
+  return { 
     dateDict,
     breakLimit,
     avgDate
