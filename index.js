@@ -24,7 +24,9 @@ const dateQuery = date => {
       new Date("2019-05-06T09:36:44.198Z")
     ).format("MMM  DD YYYY")}') Order by ps_time  DESC;`;
 };
-
+const monthQuery = date => {
+  return `select P.pre_id,P.s_id,P.ps_time,P.duration,P.numberOfOper,O.op_time,O.o_id,OP.o_type,OP.parttime from dbo.psrel P LEFT JOIN dbo.oprel O ON P.pre_id = O.pre_id and P.s_id = O.s_id LEFT JOIN dbo.operator OP ON O.o_id = OP.o_id WHERE DATEPART(mm,ps_time)=${date.getMonth()+1} and DATEPART(yy,ps_time)=${date.getUTCFullYear()} Order by ps_time  ASC;`
+}
 const Time = {
   0: 0,
   1: 0,
@@ -51,7 +53,7 @@ const Time = {
   22: 0,
   23: 0
 };
-const monthQuery = date => ``;
+
 const extractData = data => {
   let pick_q = [];
   let pick = [];
@@ -223,7 +225,7 @@ app.get("/dailyPicking", function(req, res) {
     // if (err) return next(err);
 
     var data = result.recordset;
-    console.log(data);
+    // console.log(data);
     const dailyPickingData = dailyPicking(data);
     // // console.log(realTimeData);
     // res.send(realTimeData);
@@ -304,11 +306,11 @@ const dailyDispense = data => {
   data.forEach(pre => {
     if (pre.s_id == 14 || pre.s_id == 22) {
       // console.log(pre);
-      console.log(
-        pre.ps_time,
-        new Date(pre.ps_time).getMinutes(),
-        new Date(pre.ps_time).getHours() - 7
-      );
+      // console.log(
+      //   pre.ps_time,
+      //   new Date(pre.ps_time).getMinutes(),
+      //   new Date(pre.ps_time).getHours() - 7
+      // );
       const temp = new Date(pre.ps_time);
       const h = temp.getHours() - 7;
       const m = temp.getMinutes();
@@ -354,6 +356,183 @@ app.get("/dailyDispense", function(req, res) {
     res.send(dailyDispenseData);
   });
 });
+
+const monthDict = {
+  1:0,
+  2:0,
+  3:0,
+  4:0,
+  5:0,
+  6:0,
+  7:0,
+  8:0,
+  9:0,
+  10:0,
+  11:0,
+  12:0,
+  13:0,
+  14:0,
+  15:0,
+  16:0,
+  17:0,
+  18:0,
+  19:0,
+  20:0,
+  21:0,
+  22:0,
+  23:0,
+  24:0,
+  25:0,
+  26:0,
+  27:0,
+  28:0,
+  29:0,
+  30:0,
+  31:0,
+}
+
+const monthlyPicking = data => {
+  
+  dateDict = {...monthDict}
+  breakLimit = {...monthDict}
+  avgDate = {...monthDict}
+  
+  data.forEach(pre => {
+    if (pre.s_id == 10 || pre.s_id == 20 || pre.s_id == 30){
+      const date = new Date(pre.ps_time)
+      const {duration} = pre
+      dateDict[date.getDate()] ++
+      if(pre.duration > 50){
+        breakLimit[date.getDate()] ++
+      }
+      if (avgDate[date.getDate()] === 0) {
+        avgDate[date.getDate()] = {
+          totalTime: duration,
+          num: 1
+        };
+      } else {
+        avgDate[date.getDate()].totalTime += duration;
+        avgDate[date.getDate()].num += 1;
+      }
+    }
+  })
+
+  return {
+    dateDict,
+    breakLimit,
+    avgDate
+  }
+}
+
+
+app.get("/monthlyPicking", function (req, res) {
+  const request = db.request();
+  request.query(monthQuery(new Date()), function(err, result) {
+    if (err) return next(err);
+
+    var data = result.recordset;
+
+    const monthlyPickingData = monthlyPicking(data);
+
+    res.send(monthlyPickingData);
+  });
+})
+
+
+const monthlyDecocting = data => {
+  
+  dateDict = {...monthDict}
+  breakLimit = {...monthDict}
+  
+  data.forEach(pre => {
+    if (pre.s_id == 12){
+      const date = new Date(pre.ps_time)
+      const {duration} = pre
+      dateDict[date.getDate()] ++
+      if(pre.duration > 50){
+        breakLimit[date.getDate()] ++
+      }
+      if (avgDate[date.getDate()] === 0) {
+        avgDate[date.getDate()] = {
+          totalTime: duration,
+          num: 1
+        };
+      } else {
+        avgDate[date.getDate()].totalTime += duration;
+        avgDate[date.getDate()].num += 1;
+      }
+    }
+  })
+
+  return {
+    dateDict,
+    breakLimit,
+    avgDate
+  }
+}
+
+
+app.get("/monthlyDecocting", function (req, res) {
+  const request = db.request();
+  request.query(monthQuery(new Date()), function(err, result) {
+    if (err) return next(err);
+
+    var data = result.recordset;
+
+    const monthlyDecoctingData = monthlyDecocting(data);
+
+    res.send(monthlyDecoctingData);
+  });
+})
+
+
+const monthlyDispense = data => {
+  
+  dateDict = {...monthDict}
+  breakLimit = {...monthDict}
+  
+  data.forEach(pre => {
+    if (pre.s_id == 14 || pre.s_id == 22){
+      const date = new Date(pre.ps_time)
+      const {duration} = pre
+      dateDict[date.getDate()] ++
+      if(pre.duration > 50){
+        breakLimit[date.getDate()] ++
+      }
+      if (avgDate[date.getDate()] === 0) {
+        avgDate[date.getDate()] = {
+          totalTime: duration,
+          num: 1
+        };
+      } else {
+        avgDate[date.getDate()].totalTime += duration;
+        avgDate[date.getDate()].num += 1;
+      }
+    }
+  })
+
+  return {
+    dateDict,
+    breakLimit,
+    avgDate
+  }
+}
+
+
+app.get("/monthlyDispense", function (req, res) {
+  const request = db.request();
+  request.query(monthQuery(new Date()), function(err, result) {
+    if (err) return next(err);
+
+    var data = result.recordset;
+
+    const monthlyDispenseData = monthlyDispense(data);
+
+    res.send(monthlyDispenseData);
+  });
+})
+
+
 
 app.get("/overallProcess", function(req, res) {
   const request = db.request();
