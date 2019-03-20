@@ -1,6 +1,7 @@
 var express = require("express");
 var app = express();
 var db = require("./db");
+
 var cors = require("cors");
 var moment = require("moment");
 
@@ -25,8 +26,9 @@ const dateQuery = date => {
     ).format("MMM  DD YYYY")}') Order by ps_time  DESC;`;
 };
 const monthQuery = date => {
-  return `select P.pre_id,P.s_id,P.ps_time,P.duration,P.numberOfOper,O.op_time,O.o_id,OP.o_type,OP.parttime from dbo.psrel P LEFT JOIN dbo.oprel O ON P.pre_id = O.pre_id and P.s_id = O.s_id LEFT JOIN dbo.operator OP ON O.o_id = OP.o_id WHERE DATEPART(mm,ps_time)=${date.getMonth()+1} and DATEPART(yy,ps_time)=${date.getUTCFullYear()} Order by ps_time  ASC;`
-}
+  return `select P.pre_id,P.s_id,P.ps_time,P.duration,P.numberOfOper,O.op_time,O.o_id,OP.o_type,OP.parttime from dbo.psrel P LEFT JOIN dbo.oprel O ON P.pre_id = O.pre_id and P.s_id = O.s_id LEFT JOIN dbo.operator OP ON O.o_id = OP.o_id WHERE DATEPART(mm,ps_time)=${date.getUTCMonth() +
+    1} and DATEPART(yy,ps_time)=${date.getUTCFullYear()} Order by ps_time  ASC;`;
+};
 
 const Time = {
   0: 0,
@@ -333,7 +335,11 @@ const dailyDispense = data => {
       if (timeDict[h] === undefined) timeDict[h] = 1;
       else timeDict[h] += 1;
       if (m + duration >= 60) {
-        for (let i = 1; i <= Math.floor((m + duration) / 60) && h + i <= 23; i++) {
+        for (
+          let i = 1;
+          i <= Math.floor((m + duration) / 60) && h + i <= 23;
+          i++
+        ) {
           timeDict[h + 1]++;
         }
       }
@@ -361,52 +367,51 @@ app.get("/dailyDispense", function(req, res) {
 });
 
 const monthDict = {
-  1:0,
-  2:0,
-  3:0,
-  4:0,
-  5:0,
-  6:0,
-  7:0,
-  8:0,
-  9:0,
-  10:0,
-  11:0,
-  12:0,
-  13:0,
-  14:0,
-  15:0,
-  16:0,
-  17:0,
-  18:0,
-  19:0,
-  20:0,
-  21:0,
-  22:0,
-  23:0,
-  24:0,
-  25:0,
-  26:0,
-  27:0,
-  28:0,
-  29:0,
-  30:0,
-  31:0,
-}
+  1: 0,
+  2: 0,
+  3: 0,
+  4: 0,
+  5: 0,
+  6: 0,
+  7: 0,
+  8: 0,
+  9: 0,
+  10: 0,
+  11: 0,
+  12: 0,
+  13: 0,
+  14: 0,
+  15: 0,
+  16: 0,
+  17: 0,
+  18: 0,
+  19: 0,
+  20: 0,
+  21: 0,
+  22: 0,
+  23: 0,
+  24: 0,
+  25: 0,
+  26: 0,
+  27: 0,
+  28: 0,
+  29: 0,
+  30: 0,
+  31: 0
+};
 
 const monthlyPicking = data => {
-  
-  dateDict = {...monthDict}
-  breakLimit = {...monthDict}
-  avgDate = {...monthDict}
-  
+  dateDict = { ...monthDict };
+  breakLimit = { ...monthDict };
+  avgDate = { ...monthDict };
+
   data.forEach(pre => {
-    if (pre.s_id == 10 || pre.s_id == 20 || pre.s_id == 30){
-      const date = new Date(pre.ps_time)
-      const {duration} = pre
-      dateDict[date.getDate()] ++
-      if(pre.duration > 50){
-        breakLimit[date.getDate()] ++
+    if (pre.s_id == 10 || pre.s_id == 20 || pre.s_id == 30) {
+      const date = new Date(pre.ps_time);
+      const { duration } = pre;
+      dateDict[date.getDate()]++;
+      if (pre.duration > 50) {
+        breakLimit[date.getDate()]++;
       }
       if (avgDate[date.getDate()] === 0) {
         avgDate[date.getDate()] = {
@@ -418,17 +423,16 @@ const monthlyPicking = data => {
         avgDate[date.getDate()].num += 1;
       }
     }
-  })
+  });
 
   return {
     dateDict,
     breakLimit,
     avgDate
-  }
-}
+  };
+};
 
-
-app.get("/monthlyPicking", function (req, res) {
+app.get("/monthlyPicking", function(req, res) {
   const request = db.request();
   request.query(monthQuery(new Date()), function(err, result) {
     if (err) return next(err);
@@ -439,22 +443,20 @@ app.get("/monthlyPicking", function (req, res) {
 
     res.send(monthlyPickingData);
   });
-})
-
+});
 
 const monthlyDecocting = data => {
-  
-  dateDict = {...monthDict}
-  breakLimit = {...monthDict}
-  avgDate = {...monthDict}
-  
+  dateDict = { ...monthDict };
+  breakLimit = { ...monthDict };
+  avgDate = { ...monthDict };
+
   data.forEach(pre => {
-    if (pre.s_id == 12){
-      const date = new Date(pre.ps_time)
-      const {duration} = pre
-      dateDict[date.getDate()] ++
-      if(pre.duration > 50){
-        breakLimit[date.getDate()] ++
+    if (pre.s_id == 12) {
+      const date = new Date(pre.ps_time);
+      const { duration } = pre;
+      dateDict[date.getDate()]++;
+      if (pre.duration > 50) {
+        breakLimit[date.getDate()]++;
       }
       if (avgDate[date.getDate()] === 0) {
         avgDate[date.getDate()] = {
@@ -466,17 +468,16 @@ const monthlyDecocting = data => {
         avgDate[date.getDate()].num += 1;
       }
     }
-  })
+  });
 
-  return { 
+  return {
     dateDict,
     breakLimit,
     avgDate
-  }
-}
+  };
+};
 
-
-app.get("/monthlyDecocting", function (req, res) {
+app.get("/monthlyDecocting", function(req, res) {
   const request = db.request();
   request.query(monthQuery(new Date()), function(err, result) {
     if (err) return next(err);
@@ -487,22 +488,20 @@ app.get("/monthlyDecocting", function (req, res) {
 
     res.send(monthlyDecoctingData);
   });
-})
-
+});
 
 const monthlyDispense = data => {
-  
-  dateDict = {...monthDict}
-  breakLimit = {...monthDict}
-  avgDate = {...monthDict}
-  
+  dateDict = { ...monthDict };
+  breakLimit = { ...monthDict };
+  avgDate = { ...monthDict };
+
   data.forEach(pre => {
-    if (pre.s_id == 14 || pre.s_id == 22){
-      const date = new Date(pre.ps_time)
-      const {duration} = pre
-      dateDict[date.getDate()] ++
-      if(pre.duration > 50){
-        breakLimit[date.getDate()] ++
+    if (pre.s_id == 14 || pre.s_id == 22) {
+      const date = new Date(pre.ps_time);
+      const { duration } = pre;
+      dateDict[date.getDate()]++;
+      if (pre.duration > 50) {
+        breakLimit[date.getDate()]++;
       }
       if (avgDate[date.getDate()] === 0) {
         avgDate[date.getDate()] = {
@@ -514,17 +513,16 @@ const monthlyDispense = data => {
         avgDate[date.getDate()].num += 1;
       }
     }
-  })
+  });
 
   return {
     dateDict,
     breakLimit,
     avgDate
-  }
-}
+  };
+};
 
-
-app.get("/monthlyDispense", function (req, res) {
+app.get("/monthlyDispense", function(req, res) {
   const request = db.request();
   request.query(monthQuery(new Date()), function(err, result) {
     if (err) return next(err);
@@ -535,81 +533,91 @@ app.get("/monthlyDispense", function (req, res) {
 
     res.send(monthlyDispenseData);
   });
-})
+});
 
 const threeMonthQuery = date => {
-  const m1 = (moment(date)).toDate()
-  const m2 = (moment(date).subtract(1,'month')).toDate()
-  const m3 = (moment(date).subtract(2,'month')).toDate()
+  const m1 = moment(date).toDate();
+  const m2 = moment(date)
+    .subtract(1, "month")
+    .toDate();
+  const m3 = moment(date)
+    .subtract(2, "month")
+    .toDate();
   // console.log(m1.toDate(),m2.toDate(),m3.toDate());
-  return `select P.pre_id,P.s_id,P.ps_time,P.duration,P.numberOfOper,O.op_time,O.o_id,OP.o_type,OP.parttime from dbo.psrel P LEFT JOIN dbo.oprel O ON P.pre_id = O.pre_id and P.s_id = O.s_id LEFT JOIN dbo.operator OP ON O.o_id = OP.o_id WHERE DATEPART(mm,ps_time)=${m1.getMonth()+1} and DATEPART(yy,ps_time)=${m1.getUTCFullYear()} or DATEPART(mm,ps_time)=${m2.getMonth()+1} and DATEPART(yy,ps_time)=${m2.getUTCFullYear()} or DATEPART(mm,ps_time)=${m3.getMonth()+1} and DATEPART(yy,ps_time)=${m3.getUTCFullYear()} Order by ps_time  ASC;`
-}
+  return `select P.pre_id,P.s_id,P.ps_time,P.duration,P.numberOfOper,O.op_time,O.o_id,OP.o_type,OP.parttime from dbo.psrel P LEFT JOIN dbo.oprel O ON P.pre_id = O.pre_id and P.s_id = O.s_id LEFT JOIN dbo.operator OP ON O.o_id = OP.o_id WHERE DATEPART(mm,ps_time)=${m1.getMonth() +
+    1} and DATEPART(yy,ps_time)=${m1.getUTCFullYear()} or DATEPART(mm,ps_time)=${m2.getMonth() +
+    1} and DATEPART(yy,ps_time)=${m2.getUTCFullYear()} or DATEPART(mm,ps_time)=${m3.getMonth() +
+    1} and DATEPART(yy,ps_time)=${m3.getUTCFullYear()} Order by ps_time  ASC;`;
+};
 
-const threeMonthlyPicking = (data,date) => {
-  const m1 = (moment(date)).toDate()
-  const m2 = (moment(date).subtract(1,'month')).toDate()
-  const m3 = (moment(date).subtract(2,'month')).toDate()
-  const k1 = `${m1.getUTCMonth()}_${m1.getUTCFullYear()}`
-  const k2 = `${m2.getUTCMonth()}_${m2.getUTCFullYear()}`
-  const k3 = `${m3.getUTCMonth()}_${m3.getUTCFullYear()}`
+const threeMonthlyPicking = (data, date) => {
+  const m1 = moment(date).toDate();
+  const m2 = moment(date)
+    .subtract(1, "month")
+    .toDate();
+  const m3 = moment(date)
+    .subtract(2, "month")
+    .toDate();
+  const k1 = `${m1.getUTCMonth()}_${m1.getUTCFullYear()}`;
+  const k2 = `${m2.getUTCMonth()}_${m2.getUTCFullYear()}`;
+  const k3 = `${m3.getUTCMonth()}_${m3.getUTCFullYear()}`;
   const weekDict = {};
   weekDayDict = {
-    0:0,
-    1:0,
-    2:0,
-    3:0,
-    4:0,
-    5:0,
-    6:0,
-  }
-  weekDict[k1] = {...weekDayDict}
-  weekDict[k2] = {...weekDayDict}
-  weekDict[k3] = {...weekDayDict}
+    0: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0
+  };
+  weekDict[k1] = { ...weekDayDict };
+  weekDict[k2] = { ...weekDayDict };
+  weekDict[k3] = { ...weekDayDict };
   const breakLimit = {};
-  breakLimit[k1] = {...weekDayDict}
-  breakLimit[k2] = {...weekDayDict}
-  breakLimit[k3] = {...weekDayDict}
+  breakLimit[k1] = { ...weekDayDict };
+  breakLimit[k2] = { ...weekDayDict };
+  breakLimit[k3] = { ...weekDayDict };
   const avg = {
     totalTime: 0,
-    num: 0,
-  }
+    num: 0
+  };
   const avgWeekDay = {
-    0: {...avg},
-    1: {...avg},
-    2: {...avg},
-    3: {...avg},
-    4: {...avg},
-    5: {...avg},
-    6: {...avg},
-  }
-  const avgThreeMonth = {}
-  avgThreeMonth[k1] = {...avgWeekDay}
-  avgThreeMonth[k2] = {...avgWeekDay}
-  avgThreeMonth[k3] = {...avgWeekDay}
+    0: { ...avg },
+    1: { ...avg },
+    2: { ...avg },
+    3: { ...avg },
+    4: { ...avg },
+    5: { ...avg },
+    6: { ...avg }
+  };
+  const avgThreeMonth = {};
+  avgThreeMonth[k1] = { ...avgWeekDay };
+  avgThreeMonth[k2] = { ...avgWeekDay };
+  avgThreeMonth[k3] = { ...avgWeekDay };
 
   data.forEach(pre => {
-    if(pre.s_id == 10 || pre.s_id == 20 || pre.s_id == 30){
+    if (pre.s_id == 10 || pre.s_id == 20 || pre.s_id == 30) {
       const m = pre.ps_time.getUTCMonth();
       const y = pre.ps_time.getUTCFullYear();
       const day = pre.ps_time.getUTCDay();
-      weekDict[`${m}_${y}`][day]++
-      if(pre.duration > 50){
-        breakLimit[`${m}_${y}`][day]++
+      weekDict[`${m}_${y}`][day]++;
+      if (pre.duration > 50) {
+        breakLimit[`${m}_${y}`][day]++;
       }
-      avgThreeMonth[`${m}_${y}`][day].totalTime += pre.duration
-      avgThreeMonth[`${m}_${y}`][day].num += 1
+      avgThreeMonth[`${m}_${y}`][day].totalTime += pre.duration;
+      avgThreeMonth[`${m}_${y}`][day].num += 1;
     }
-  })
+  });
 
   return {
     weekDict,
     breakLimit,
     avgThreeMonth
-  }
+  };
+};
 
-}
-
-app.get("/threeMonthlyPicking", function (req, res) {
+app.get("/threeMonthlyPicking", function(req, res) {
   const request = db.request();
   request.query(threeMonthQuery(new Date()), function(err, result) {
     if (err) return next(err);
@@ -620,73 +628,76 @@ app.get("/threeMonthlyPicking", function (req, res) {
 
     res.send(threeMonthlyPickingData);
   });
-})
+});
 
-const threeMonthlyDecocting = (data,date) => {
-  const m1 = (moment(date)).toDate()
-  const m2 = (moment(date).subtract(1,'month')).toDate()
-  const m3 = (moment(date).subtract(2,'month')).toDate()
-  const k1 = `${m1.getUTCMonth()}_${m1.getUTCFullYear()}`
-  const k2 = `${m2.getUTCMonth()}_${m2.getUTCFullYear()}`
-  const k3 = `${m3.getUTCMonth()}_${m3.getUTCFullYear()}`
+const threeMonthlyDecocting = (data, date) => {
+  const m1 = moment(date).toDate();
+  const m2 = moment(date)
+    .subtract(1, "month")
+    .toDate();
+  const m3 = moment(date)
+    .subtract(2, "month")
+    .toDate();
+  const k1 = `${m1.getUTCMonth()}_${m1.getUTCFullYear()}`;
+  const k2 = `${m2.getUTCMonth()}_${m2.getUTCFullYear()}`;
+  const k3 = `${m3.getUTCMonth()}_${m3.getUTCFullYear()}`;
   const weekDict = {};
   weekDayDict = {
-    0:0,
-    1:0,
-    2:0,
-    3:0,
-    4:0,
-    5:0,
-    6:0,
-  }
-  weekDict[k1] = {...weekDayDict}
-  weekDict[k2] = {...weekDayDict}
-  weekDict[k3] = {...weekDayDict}
+    0: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0
+  };
+  weekDict[k1] = { ...weekDayDict };
+  weekDict[k2] = { ...weekDayDict };
+  weekDict[k3] = { ...weekDayDict };
   const breakLimit = {};
-  breakLimit[k1] = {...weekDayDict}
-  breakLimit[k2] = {...weekDayDict}
-  breakLimit[k3] = {...weekDayDict}
+  breakLimit[k1] = { ...weekDayDict };
+  breakLimit[k2] = { ...weekDayDict };
+  breakLimit[k3] = { ...weekDayDict };
   const avg = {
     totalTime: 0,
-    num: 0,
-  }
+    num: 0
+  };
   const avgWeekDay = {
-    0: {...avg},
-    1: {...avg},
-    2: {...avg},
-    3: {...avg},
-    4: {...avg},
-    5: {...avg},
-    6: {...avg},
-  }
-  const avgThreeMonth = {}
-  avgThreeMonth[k1] = {...avgWeekDay}
-  avgThreeMonth[k2] = {...avgWeekDay}
-  avgThreeMonth[k3] = {...avgWeekDay}
+    0: { ...avg },
+    1: { ...avg },
+    2: { ...avg },
+    3: { ...avg },
+    4: { ...avg },
+    5: { ...avg },
+    6: { ...avg }
+  };
+  const avgThreeMonth = {};
+  avgThreeMonth[k1] = { ...avgWeekDay };
+  avgThreeMonth[k2] = { ...avgWeekDay };
+  avgThreeMonth[k3] = { ...avgWeekDay };
 
   data.forEach(pre => {
-    if(pre.s_id == 12){
+    if (pre.s_id == 12) {
       const m = pre.ps_time.getUTCMonth();
       const y = pre.ps_time.getUTCFullYear();
       const day = pre.ps_time.getUTCDay();
-      weekDict[`${m}_${y}`][day]++
-      if(pre.duration > 50){
-        breakLimit[`${m}_${y}`][day]++
+      weekDict[`${m}_${y}`][day]++;
+      if (pre.duration > 50) {
+        breakLimit[`${m}_${y}`][day]++;
       }
-      avgThreeMonth[`${m}_${y}`][day].totalTime += pre.duration
-      avgThreeMonth[`${m}_${y}`][day].num += 1
+      avgThreeMonth[`${m}_${y}`][day].totalTime += pre.duration;
+      avgThreeMonth[`${m}_${y}`][day].num += 1;
     }
-  })
+  });
 
   return {
     weekDict,
     breakLimit,
     avgThreeMonth
-  }
+  };
+};
 
-}
-
-app.get("/threeMonthlyDecocting", function (req, res) {
+app.get("/threeMonthlyDecocting", function(req, res) {
   const request = db.request();
   request.query(threeMonthQuery(new Date()), function(err, result) {
     if (err) return next(err);
@@ -697,74 +708,76 @@ app.get("/threeMonthlyDecocting", function (req, res) {
 
     res.send(threeMonthlyDecoctingData);
   });
-})
+});
 
-
-const threeMonthlyDispense = (data,date) => {
-  const m1 = (moment(date)).toDate()
-  const m2 = (moment(date).subtract(1,'month')).toDate()
-  const m3 = (moment(date).subtract(2,'month')).toDate()
-  const k1 = `${m1.getUTCMonth()}_${m1.getUTCFullYear()}`
-  const k2 = `${m2.getUTCMonth()}_${m2.getUTCFullYear()}`
-  const k3 = `${m3.getUTCMonth()}_${m3.getUTCFullYear()}`
+const threeMonthlyDispense = (data, date) => {
+  const m1 = moment(date).toDate();
+  const m2 = moment(date)
+    .subtract(1, "month")
+    .toDate();
+  const m3 = moment(date)
+    .subtract(2, "month")
+    .toDate();
+  const k1 = `${m1.getUTCMonth()}_${m1.getUTCFullYear()}`;
+  const k2 = `${m2.getUTCMonth()}_${m2.getUTCFullYear()}`;
+  const k3 = `${m3.getUTCMonth()}_${m3.getUTCFullYear()}`;
   const weekDict = {};
   weekDayDict = {
-    0:0,
-    1:0,
-    2:0,
-    3:0,
-    4:0,
-    5:0,
-    6:0,
-  }
-  weekDict[k1] = {...weekDayDict}
-  weekDict[k2] = {...weekDayDict}
-  weekDict[k3] = {...weekDayDict}
+    0: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0
+  };
+  weekDict[k1] = { ...weekDayDict };
+  weekDict[k2] = { ...weekDayDict };
+  weekDict[k3] = { ...weekDayDict };
   const breakLimit = {};
-  breakLimit[k1] = {...weekDayDict}
-  breakLimit[k2] = {...weekDayDict}
-  breakLimit[k3] = {...weekDayDict}
+  breakLimit[k1] = { ...weekDayDict };
+  breakLimit[k2] = { ...weekDayDict };
+  breakLimit[k3] = { ...weekDayDict };
   const avg = {
     totalTime: 0,
-    num: 0,
-  }
+    num: 0
+  };
   const avgWeekDay = {
-    0: {...avg},
-    1: {...avg},
-    2: {...avg},
-    3: {...avg},
-    4: {...avg},
-    5: {...avg},
-    6: {...avg},
-  }
-  const avgThreeMonth = {}
-  avgThreeMonth[k1] = {...avgWeekDay}
-  avgThreeMonth[k2] = {...avgWeekDay}
-  avgThreeMonth[k3] = {...avgWeekDay}
+    0: { ...avg },
+    1: { ...avg },
+    2: { ...avg },
+    3: { ...avg },
+    4: { ...avg },
+    5: { ...avg },
+    6: { ...avg }
+  };
+  const avgThreeMonth = {};
+  avgThreeMonth[k1] = { ...avgWeekDay };
+  avgThreeMonth[k2] = { ...avgWeekDay };
+  avgThreeMonth[k3] = { ...avgWeekDay };
 
   data.forEach(pre => {
-    if(pre.s_id == 14 || pre.s_id == 22){
+    if (pre.s_id == 14 || pre.s_id == 22) {
       const m = pre.ps_time.getUTCMonth();
       const y = pre.ps_time.getUTCFullYear();
       const day = pre.ps_time.getUTCDay();
-      weekDict[`${m}_${y}`][day]++
-      if(pre.duration > 50){
-        breakLimit[`${m}_${y}`][day]++
+      weekDict[`${m}_${y}`][day]++;
+      if (pre.duration > 50) {
+        breakLimit[`${m}_${y}`][day]++;
       }
-      avgThreeMonth[`${m}_${y}`][day].totalTime += pre.duration
-      avgThreeMonth[`${m}_${y}`][day].num += 1
+      avgThreeMonth[`${m}_${y}`][day].totalTime += pre.duration;
+      avgThreeMonth[`${m}_${y}`][day].num += 1;
     }
-  })
+  });
 
   return {
     weekDict,
     breakLimit,
     avgThreeMonth
-  }
+  };
+};
 
-}
-
-app.get("/threeMonthlyDispense", function (req, res) {
+app.get("/threeMonthlyDispense", function(req, res) {
   const request = db.request();
   request.query(threeMonthQuery(new Date()), function(err, result) {
     if (err) return next(err);
@@ -775,30 +788,48 @@ app.get("/threeMonthlyDispense", function (req, res) {
 
     res.send(threeMonthlyDispenseData);
   });
-})
+});
 
 const overall = data => {
   const avg = {
     totalTime: 0,
-    num: 0,
-  }
-  const dateDict = {}
-  for(let i = 0;i<23;i++) dateDict[i] = {...avg}
+    num: 0
+  };
+  const type = {
+    pick: { ...avg },
+    decoct: { ...avg },
+    dispense: { ...avg }
+  };
+  const dateDict = {};
+  for (let i = 0; i < 23; i++) dateDict[i] = { ...type };
   data.forEach(pre => {
-    if(pre.s_id == 10 || pre.s_id == 20 || pre.s_id == 30 || pre.s_id == 12 || pre.s_id == 14 || pre.s_id == 22){
+    if (
+      pre.s_id == 10 ||
+      pre.s_id == 20 ||
+      pre.s_id == 30 ||
+      pre.s_id == 12 ||
+      pre.s_id == 14 ||
+      pre.s_id == 22
+    ) {
       const temp = new Date(pre.ps_time);
       const h = temp.getUTCHours();
       const m = temp.getUTCMinutes();
-      dateDict[h].totalTime += pre.duration
-      dateDict[h].num ++;
+      if ([10, 20, 30].includes(pre.s_id)) {
+        dateDict[h].pick.totalTime += pre.duration;
+        dateDict[h].pick.num++;
+      } else if (pre.s_id == 12) {
+        dateDict[h].decoct.totalTime += pre.duration;
+        dateDict[h].decoct.num++;
+      } else if ([14, 20].includes(pre.s_id)) {
+        dateDict[h].dispense.totalTime += pre.duration;
+        dateDict[h].dispense.num++;
+      }
     }
-  })
+  });
   return {
     dateDict
-  }
-}
-
-
+  };
+};
 
 app.get("/overallProcess", function(req, res) {
   const request = db.request();
@@ -811,6 +842,20 @@ app.get("/overallProcess", function(req, res) {
     // // console.log(realTimeData);
     // res.send(realTimeData);
     res.send(overallData);
+  });
+});
+
+app.get("/getStaff", function(req, res) {
+  const request = writeDB.request();
+  request.query("select * from dashboard.staff", function(err, result) {
+    // if (err) return next(err);
+
+    var staffData = result.recordset;
+    // console.log(data);
+    // const overallData = overall(data);
+    // // console.log(realTimeData);
+    // res.send(realTimeData);
+    res.send(staffData);
   });
 });
 
