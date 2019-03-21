@@ -18,11 +18,11 @@ const realtimeQuery =
 const dateQuery = date => {
   if (date.getDate() >= 10)
     return `select P.pre_id,P.s_id,P.ps_time,P.duration,P.numberOfOper,O.op_time,O.o_id,OP.o_type,OP.parttime from dbo.psrel P LEFT JOIN dbo.oprel O ON P.pre_id = O.pre_id and P.s_id = O.s_id LEFT JOIN dbo.operator OP ON O.o_id = OP.o_id WHERE CONVERT(varchar(11),ps_time)=CONVERT(varchar(11),'${moment(
-      new Date("2019-02-25T09:36:44.198Z")
+      new Date(date)
     ).format("MMM DD YYYY")}') Order by ps_time  DESC;`;
   else
     return `select P.pre_id,P.s_id,P.ps_time,P.duration,P.numberOfOper,O.op_time,O.o_id,OP.o_type,OP.parttime from dbo.psrel P LEFT JOIN dbo.oprel O ON P.pre_id = O.pre_id and P.s_id = O.s_id LEFT JOIN dbo.operator OP ON O.o_id = OP.o_id WHERE CONVERT(varchar(11),ps_time)=CONVERT(varchar(11),'${moment(
-      new Date("2019-05-06T09:36:44.198Z")
+      new Date("date")
     ).format("MMM  DD YYYY")}') Order by ps_time  DESC;`;
 };
 const monthQuery = date => {
@@ -222,9 +222,10 @@ const dailyPicking = data => {
     avgTime
   };
 };
-app.get("/dailyPicking", function(req, res) {
+app.post("/dailyPicking", function(req, res) {
   const request = db.request();
-  request.query(dateQuery(new Date()), function(err, result) {
+  const {date} = req.body;
+  request.query(dateQuery(date), function(err, result) {
     // if (err) return next(err);
 
     var data = result.recordset;
@@ -287,9 +288,10 @@ const dailyDecocting = data => {
   };
 };
 
-app.get("/dailyDecocting", function(req, res) {
+app.post("/dailyDecocting", function(req, res) {
   const request = db.request();
-  request.query(dateQuery(new Date()), function(err, result) {
+  const {date} = req.body;
+  request.query(dateQuery(date), function(err, result) {
     // if (err) return next(err);
 
     var data = result.recordset;
@@ -353,9 +355,10 @@ const dailyDispense = data => {
   };
 };
 
-app.get("/dailyDispense", function(req, res) {
+app.post("/dailyDispense", function(req, res) {
   const request = db.request();
-  request.query(dateQuery(new Date()), function(err, result) {
+  const {date} = req.body;
+  request.query(dateQuery(date), function(err, result) {
     if (err) return next(err);
 
     var data = result.recordset;
@@ -432,9 +435,10 @@ const monthlyPicking = data => {
   };
 };
 
-app.get("/monthlyPicking", function(req, res) {
+app.post("/monthlyPicking", function(req, res) {
   const request = db.request();
-  request.query(monthQuery(new Date()), function(err, result) {
+  const {date} = req.body;
+  request.query(monthQuery(date), function(err, result) {
     if (err) return next(err);
 
     var data = result.recordset;
@@ -477,9 +481,10 @@ const monthlyDecocting = data => {
   };
 };
 
-app.get("/monthlyDecocting", function(req, res) {
+app.post("/monthlyDecocting", function(req, res) {
   const request = db.request();
-  request.query(monthQuery(new Date()), function(err, result) {
+  const {date} = req.body;
+  request.query(monthQuery(date), function(err, result) {
     if (err) return next(err);
 
     var data = result.recordset;
@@ -522,9 +527,10 @@ const monthlyDispense = data => {
   };
 };
 
-app.get("/monthlyDispense", function(req, res) {
+app.post("/monthlyDispense", function(req, res) {
   const request = db.request();
-  request.query(monthQuery(new Date()), function(err, result) {
+  const {date} = req.body;
+  request.query(monthQuery(date), function(err, result) {
     if (err) return next(err);
 
     var data = result.recordset;
@@ -617,9 +623,10 @@ const threeMonthlyPicking = (data, date) => {
   };
 };
 
-app.get("/threeMonthlyPicking", function(req, res) {
+app.post("/threeMonthlyPicking", function(req, res) {
   const request = db.request();
-  request.query(threeMonthQuery(new Date()), function(err, result) {
+  const {date} = req.body;
+  request.query(threeMonthQuery(date), function(err, result) {
     if (err) return next(err);
 
     var data = result.recordset;
@@ -697,9 +704,10 @@ const threeMonthlyDecocting = (data, date) => {
   };
 };
 
-app.get("/threeMonthlyDecocting", function(req, res) {
+app.post("/threeMonthlyDecocting", function(req, res) {
   const request = db.request();
-  request.query(threeMonthQuery(new Date()), function(err, result) {
+  const {date} = req.body;
+  request.query(threeMonthQuery(date), function(err, result) {
     if (err) return next(err);
 
     var data = result.recordset;
@@ -777,9 +785,10 @@ const threeMonthlyDispense = (data, date) => {
   };
 };
 
-app.get("/threeMonthlyDispense", function(req, res) {
+app.post("/threeMonthlyDispense", function(req, res) {
   const request = db.request();
-  request.query(threeMonthQuery(new Date()), function(err, result) {
+  const {date} = req.body;
+  request.query(threeMonthQuery(date), function(err, result) {
     if (err) return next(err);
 
     var data = result.recordset;
@@ -833,9 +842,10 @@ const overall = data => {
   };
 };
 
-app.get("/overallProcess", function(req, res) {
+app.post("/overallProcess", function(req, res) {
   const request = db.request();
-  request.query(monthQuery(new Date()), function(err, result) {
+  const {date} = req.body;
+  request.query(monthQuery(date), function(err, result) {
     // if (err) return next(err);
 
     var data = result.recordset;
@@ -847,19 +857,6 @@ app.get("/overallProcess", function(req, res) {
   });
 });
 
-app.get("/getStaff", function(req, res) {
-  const request = writeDB.request();
-  request.query("select * from dashboard.staff", function(err, result) {
-    // if (err) return next(err);
-
-    var staffData = result.recordset;
-    // console.log(data);
-    // const overallData = overall(data);
-    // // console.log(realTimeData);
-    // res.send(realTimeData);
-    res.send(staffData);
-  });
-});
 
 var server = app.listen(5000, function() {
   console.log("Server is running..");
