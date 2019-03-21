@@ -818,7 +818,7 @@ const overall = data => {
     dispense: { ...avg }
   };
   const dateDict = {};
-  for (let i = 0; i < 23; i++) dateDict[i] = JSON.parse(JSON.stringify(type));
+  for (let i = 0; i < 24; i++) dateDict[i] = JSON.parse(JSON.stringify(type));
   data.forEach(pre => {
     if (
       pre.s_id == 10 ||
@@ -861,6 +861,21 @@ app.post("/overallProcess", function(req, res) {
     // // console.log(realTimeData);
     // res.send(realTimeData);
     res.send(overallData);
+  });
+});
+
+
+app.post("/scenario", function(req, res) {
+  const request = db.request();
+  const date = new Date(req.body.date)
+  request.query(monthQuery(date), function(err, result) {
+    if (err) return next(err);
+
+    var data = result.recordset;
+
+    const monthlyPickingData = monthlyPicking(data);
+
+    res.send(monthlyPickingData);
   });
 });
 
