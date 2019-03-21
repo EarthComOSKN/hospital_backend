@@ -1,7 +1,7 @@
 var express = require("express");
 var app = express();
 var db = require("./db");
-var bodyParser = require('body-parser');
+var bodyParser = require("body-parser");
 var cors = require("cors");
 var moment = require("moment");
 
@@ -231,7 +231,7 @@ const dailyPicking = data => {
 app.post("/dailyPicking", function(req, res) {
   const request = db.request();
   console.log(req.body);
-  const date = new Date(req.body.date)
+  const date = new Date(req.body.date);
   request.query(dateQuery(date), function(err, result) {
     // if (err) return next(err);
 
@@ -297,7 +297,7 @@ const dailyDecocting = data => {
 
 app.post("/dailyDecocting", function(req, res) {
   const request = db.request();
-  const date = new Date(req.body.date)
+  const date = new Date(req.body.date);
   request.query(dateQuery(date), function(err, result) {
     // if (err) return next(err);
 
@@ -364,7 +364,7 @@ const dailyDispense = data => {
 
 app.post("/dailyDispense", function(req, res) {
   const request = db.request();
-  const date = new Date(req.body.date)
+  const date = new Date(req.body.date);
   request.query(dateQuery(date), function(err, result) {
     if (err) return next(err);
 
@@ -444,7 +444,7 @@ const monthlyPicking = data => {
 
 app.post("/monthlyPicking", function(req, res) {
   const request = db.request();
-  const date = new Date(req.body.date)
+  const date = new Date(req.body.date);
   request.query(monthQuery(date), function(err, result) {
     if (err) return next(err);
 
@@ -490,7 +490,7 @@ const monthlyDecocting = data => {
 
 app.post("/monthlyDecocting", function(req, res) {
   const request = db.request();
-  const date = new Date(req.body.date)
+  const date = new Date(req.body.date);
   request.query(monthQuery(date), function(err, result) {
     if (err) return next(err);
 
@@ -536,7 +536,7 @@ const monthlyDispense = data => {
 
 app.post("/monthlyDispense", function(req, res) {
   const request = db.request();
-  const date = new Date(req.body.date)
+  const date = new Date(req.body.date);
   request.query(monthQuery(date), function(err, result) {
     if (err) return next(err);
 
@@ -632,7 +632,7 @@ const threeMonthlyPicking = (data, date) => {
 
 app.post("/threeMonthlyPicking", function(req, res) {
   const request = db.request();
-  const date = new Date(req.body.date)
+  const date = new Date(req.body.date);
   request.query(threeMonthQuery(date), function(err, result) {
     if (err) return next(err);
 
@@ -713,7 +713,7 @@ const threeMonthlyDecocting = (data, date) => {
 
 app.post("/threeMonthlyDecocting", function(req, res) {
   const request = db.request();
-  const date = new Date(req.body.date)
+  const date = new Date(req.body.date);
   request.query(threeMonthQuery(date), function(err, result) {
     if (err) return next(err);
 
@@ -794,7 +794,7 @@ const threeMonthlyDispense = (data, date) => {
 
 app.post("/threeMonthlyDispense", function(req, res) {
   const request = db.request();
-  const date = new Date(req.body.date)
+  const date = new Date(req.body.date);
   request.query(threeMonthQuery(date), function(err, result) {
     if (err) return next(err);
 
@@ -807,7 +807,7 @@ app.post("/threeMonthlyDispense", function(req, res) {
 });
 
 const overall = data => {
-  const a = new Set()
+  const a = new Set();
   const avg = {
     totalTime: 0,
     num: 0
@@ -830,7 +830,7 @@ const overall = data => {
     ) {
       const temp = new Date(pre.ps_time);
       const h = temp.getUTCHours();
-      
+
       const m = temp.getUTCMinutes();
       if ([10, 20, 30].includes(pre.s_id)) {
         dateDict[h].pick.totalTime += pre.duration;
@@ -851,7 +851,7 @@ const overall = data => {
 
 app.post("/overallProcess", function(req, res) {
   const request = db.request();
-  const date = new Date(req.body.date)
+  const date = new Date(req.body.date);
   request.query(monthQuery(date), function(err, result) {
     // if (err) return next(err);
 
@@ -864,21 +864,50 @@ app.post("/overallProcess", function(req, res) {
   });
 });
 
+const Scenario = data => {
+  const a = new Set();
+  const avg = {
+    totalTime: 0,
+    num: 0
+  };
+
+  const dateDict = {};
+  for (let i = 0; i < 24; i++) dateDict[i] = JSON.parse(JSON.stringify(avg));
+  data.forEach(pre => {
+    if (
+      pre.s_id == 10 ||
+      pre.s_id == 20 ||
+      pre.s_id == 30 ||
+      pre.s_id == 12 ||
+      pre.s_id == 14 ||
+      pre.s_id == 22
+    ) {
+      const temp = new Date(pre.ps_time);
+      const h = temp.getUTCHours();
+
+      const m = temp.getUTCMinutes();
+      dateDict[h].totalTime += pre.duration;
+      dateDict[h].num++;
+    }
+  });
+  return {
+    dateDict
+  };
+};
 
 app.post("/scenario", function(req, res) {
   const request = db.request();
-  const date = new Date(req.body.date)
+  const date = new Date(req.body.date);
   request.query(monthQuery(date), function(err, result) {
     if (err) return next(err);
 
     var data = result.recordset;
 
-    const monthlyPickingData = monthlyPicking(data);
+    const ScenarioData = Scenario(data);
 
-    res.send(monthlyPickingData);
+    res.send(ScenarioData);
   });
 });
-
 
 var server = app.listen(5000, function() {
   console.log("Server is running..");
