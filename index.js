@@ -885,7 +885,7 @@ const Scenario = data => {
   };
 
   const dateDict = {};
-  for (let i = 0; i < 32; i++) dateDict[i] = JSON.parse(JSON.stringify(avg));
+  for (let i = 1; i < 32; i++) dateDict[i] = JSON.parse(JSON.stringify(avg));
   data.forEach(pre => {
     if (
       pre.s_id == 10 ||
