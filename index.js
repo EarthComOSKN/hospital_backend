@@ -791,6 +791,7 @@ app.get("/threeMonthlyDispense", function(req, res) {
 });
 
 const overall = data => {
+  const a = new Set()
   const avg = {
     totalTime: 0,
     num: 0
@@ -813,6 +814,7 @@ const overall = data => {
     ) {
       const temp = new Date(pre.ps_time);
       const h = temp.getUTCHours();
+      a.add(h)
       const m = temp.getUTCMinutes();
       if ([10, 20, 30].includes(pre.s_id)) {
         dateDict[h].pick.totalTime += pre.duration;
@@ -826,6 +828,7 @@ const overall = data => {
       }
     }
   });
+  console.log(a);
   return {
     dateDict
   };
