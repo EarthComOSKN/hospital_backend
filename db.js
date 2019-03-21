@@ -4,7 +4,7 @@ var dbConfig = {
   user: 'dashboard',
   password: 'dashboard',
   server: 'huachiewtcm.dyndns.org', 
-  database: 'ieproject',
+  database: 'dashboard',
   options: { tdsVersion: '7_1' }  
 };
 
