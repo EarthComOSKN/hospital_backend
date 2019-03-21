@@ -4,7 +4,6 @@ var db = require("./db");
 var bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-// var writeDB = require("./writeDB")
 var cors = require("cors");
 var moment = require("moment");
 
