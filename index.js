@@ -258,8 +258,22 @@ const dailyDecocting = data => {
   const timeDict = { ...Time };
   const breakLimit = { ...Time };
   const avgTime = { ...Time };
+  const staffDict = {...Time};
 
   data.forEach(pre => {
+    if( [13].includes(pre.s_id)){
+      const temp = new Date(pre.ps_time);
+      const h = temp.getUTCHours();
+      const m = temp.getUTCMinutes();
+      const duration = pre.duration;
+      if (staffDict[h] === undefined) staffDict[h] = 1;
+      else staffDict[h] += 1;
+      if (m + duration >= 60) {
+        for (let i = 1; i <= Math.floor((m + duration) / 60); i++) {
+          staffDict[h + 1]++;
+        }
+      }
+    }
     if (pre.s_id == 12) {
       // console.log(pre);
       console.log(
@@ -301,7 +315,8 @@ const dailyDecocting = data => {
   return {
     timeDict,
     breakLimit,
-    avgTime
+    avgTime,
+    staffDict
   };
 };
 
