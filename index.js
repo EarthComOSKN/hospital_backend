@@ -174,10 +174,11 @@ app.get("/realtime", function(req, res) {
   const request = db.request();
   request.query(realtimeQuery, function(err, result) {
     if (err) return next(err);
-
+    // console.log(err);
+    // res.send({a:1})
     var data = result.recordset;
     const realTimeData = extractData(data);
-    // console.log(realTimeData);
+    // // console.log(realTimeData);
     res.send(realTimeData);
   });
 });
