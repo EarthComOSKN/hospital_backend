@@ -297,7 +297,7 @@ const dailyDecocting = data => {
 
 app.post("/dailyDecocting", function(req, res) {
   const request = db.request();
-  const {date} = req.body;
+  const date = new Date(req.body.date)
   request.query(dateQuery(date), function(err, result) {
     // if (err) return next(err);
 
@@ -364,7 +364,7 @@ const dailyDispense = data => {
 
 app.post("/dailyDispense", function(req, res) {
   const request = db.request();
-  const {date} = req.body;
+  const date = new Date(req.body.date)
   request.query(dateQuery(date), function(err, result) {
     if (err) return next(err);
 
@@ -444,7 +444,7 @@ const monthlyPicking = data => {
 
 app.post("/monthlyPicking", function(req, res) {
   const request = db.request();
-  const {date} = req.body;
+  const date = new Date(req.body.date)
   request.query(monthQuery(date), function(err, result) {
     if (err) return next(err);
 
@@ -490,7 +490,7 @@ const monthlyDecocting = data => {
 
 app.post("/monthlyDecocting", function(req, res) {
   const request = db.request();
-  const {date} = req.body;
+  const date = new Date(req.body.date)
   request.query(monthQuery(date), function(err, result) {
     if (err) return next(err);
 
@@ -536,7 +536,7 @@ const monthlyDispense = data => {
 
 app.post("/monthlyDispense", function(req, res) {
   const request = db.request();
-  const {date} = req.body;
+  const date = new Date(req.body.date)
   request.query(monthQuery(date), function(err, result) {
     if (err) return next(err);
 
@@ -632,7 +632,7 @@ const threeMonthlyPicking = (data, date) => {
 
 app.post("/threeMonthlyPicking", function(req, res) {
   const request = db.request();
-  const {date} = req.body;
+  const date = new Date(req.body.date)
   request.query(threeMonthQuery(date), function(err, result) {
     if (err) return next(err);
 
@@ -713,7 +713,7 @@ const threeMonthlyDecocting = (data, date) => {
 
 app.post("/threeMonthlyDecocting", function(req, res) {
   const request = db.request();
-  const {date} = req.body;
+  const date = new Date(req.body.date)
   request.query(threeMonthQuery(date), function(err, result) {
     if (err) return next(err);
 
@@ -794,7 +794,7 @@ const threeMonthlyDispense = (data, date) => {
 
 app.post("/threeMonthlyDispense", function(req, res) {
   const request = db.request();
-  const {date} = req.body;
+  const date = new Date(req.body.date)
   request.query(threeMonthQuery(date), function(err, result) {
     if (err) return next(err);
 
@@ -851,7 +851,7 @@ const overall = data => {
 
 app.post("/overallProcess", function(req, res) {
   const request = db.request();
-  const {date} = req.body;
+  const date = new Date(req.body.date)
   request.query(monthQuery(date), function(err, result) {
     // if (err) return next(err);
 
