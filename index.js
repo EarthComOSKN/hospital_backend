@@ -187,14 +187,23 @@ const dailyPicking = data => {
   const timeDict = { ...Time };
   const breakLimit = { ...Time };
   const avgTime = { ...Time };
+  const staffDict = {...Time};
 
   data.forEach(pre => {
+    if( [11,21,31].includes(pre.s_id)){
+      const temp = new Date(pre.ps_time);
+      const h = temp.getUTCHours();
+      const m = temp.getUTCMinutes();
+      const duration = pre.duration;
+      if (staffDict[h] === undefined) staffDict[h] = 1;
+      else staffDict[h] += 1;
+      if (m + duration >= 60) {
+        for (let i = 1; i <= Math.floor((m + duration) / 60); i++) {
+          staffDict[h + 1]++;
+        }
+      }
+    }
     if (pre.s_id == 10 || pre.s_id == 20 || pre.s_id == 30) {
-      // console.log(
-      //   pre.ps_time,
-      //   new Date(pre.ps_time).getMinutes(),
-      //   new Date(pre.ps_time).getHours() - 7
-      // );
       const temp = new Date(pre.ps_time);
       const h = temp.getUTCHours();
       const m = temp.getUTCMinutes();
@@ -225,6 +234,7 @@ const dailyPicking = data => {
     timeDict,
     breakLimit,
     avgTime,
+    staffDict,
     data
   };
 };
