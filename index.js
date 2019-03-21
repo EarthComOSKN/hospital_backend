@@ -183,27 +183,19 @@ app.get("/realtime", function(req, res) {
   });
 });
 
-const dailyPicking = data => {
+const dailyPicking = (data,limit) => {
   const timeDict = { ...Time };
   const breakLimit = { ...Time };
   const avgTime = { ...Time };
-  const staffDict = {...Time};
 
   data.forEach(pre => {
-    if( [11,21,31].includes(pre.s_id)){
-      const temp = new Date(pre.ps_time);
-      const h = temp.getUTCHours();
-      const m = temp.getUTCMinutes();
-      const duration = pre.duration;
-      if (staffDict[h] === undefined) staffDict[h] = 1;
-      else staffDict[h] += 1;
-      if (m + duration >= 60) {
-        for (let i = 1; i <= Math.floor((m + duration) / 60); i++) {
-          staffDict[h + 1]++;
-        }
-      }
-    }
+    // console.log(pre);
     if (pre.s_id == 10 || pre.s_id == 20 || pre.s_id == 30) {
+      // console.log(
+      //   pre.ps_time,
+      //   new Date(pre.ps_time).getMinutes(),
+      //   new Date(pre.ps_time).getHours() - 7
+      // );
       const temp = new Date(pre.ps_time);
       const h = temp.getUTCHours();
       const m = temp.getUTCMinutes();
@@ -217,7 +209,8 @@ const dailyPicking = data => {
         avgTime[h].totalTime += duration;
         avgTime[h].num += 1;
       }
-      if (duration > 40) {
+      console.log(limit);
+      if (duration > limit) {
         breakLimit[h] += 1;
       }
       if (timeDict[h] === undefined) timeDict[h] = 1;
@@ -234,7 +227,6 @@ const dailyPicking = data => {
     timeDict,
     breakLimit,
     avgTime,
-    staffDict,
     data
   };
 };
@@ -242,38 +234,26 @@ app.post("/dailyPicking", function(req, res) {
   const request = db.request();
   console.log(req.body);
   const date = new Date(req.body.date);
+  const {limit} = req.body
+  console.log(req.body);
   request.query(dateQuery(date), function(err, result) {
     // if (err) return next(err);
 
     var data = result.recordset;
     // console.log(data);
-    const dailyPickingData = dailyPicking(data);
+    const dailyPickingData = dailyPicking(data,limit);
     // // console.log(realTimeData);
     // res.send(realTimeData);
     res.send(dailyPickingData);
   });
 });
 
-const dailyDecocting = data => {
+const dailyDecocting = (data,limit) => {
   const timeDict = { ...Time };
   const breakLimit = { ...Time };
   const avgTime = { ...Time };
-  const staffDict = {...Time};
 
   data.forEach(pre => {
-    if( [13].includes(pre.s_id)){
-      const temp = new Date(pre.ps_time);
-      const h = temp.getUTCHours();
-      const m = temp.getUTCMinutes();
-      const duration = pre.duration;
-      if (staffDict[h] === undefined) staffDict[h] = 1;
-      else staffDict[h] += 1;
-      if (m + duration >= 60) {
-        for (let i = 1; i <= Math.floor((m + duration) / 60); i++) {
-          staffDict[h + 1]++;
-        }
-      }
-    }
     if (pre.s_id == 12) {
       // console.log(pre);
       console.log(
@@ -294,7 +274,7 @@ const dailyDecocting = data => {
         avgTime[h].totalTime += duration;
         avgTime[h].num += 1;
       }
-      if (duration > 40) {
+      if (duration > limit) {
         console.log("earth", duration);
         breakLimit[h] += 1;
       }
@@ -315,27 +295,27 @@ const dailyDecocting = data => {
   return {
     timeDict,
     breakLimit,
-    avgTime,
-    staffDict
+    avgTime
   };
 };
 
 app.post("/dailyDecocting", function(req, res) {
   const request = db.request();
   const date = new Date(req.body.date);
+  const {limit} = req.body
   request.query(dateQuery(date), function(err, result) {
     // if (err) return next(err);
 
     var data = result.recordset;
     // console.log(data);
-    const dailyDecoctingData = dailyDecocting(data);
+    const dailyDecoctingData = dailyDecocting(data,limit);
     // // console.log(realTimeData);
     // res.send(realTimeData);
     res.send(dailyDecoctingData);
   });
 });
 
-const dailyDispense = data => {
+const dailyDispense = (data,limit) => {
   const timeDict = { ...Time };
   const breakLimit = { ...Time };
   const avgTime = { ...Time };
@@ -363,7 +343,7 @@ const dailyDispense = data => {
         avgTime[h].totalTime += duration;
         avgTime[h].num += 1;
       }
-      if (duration > 40) {
+      if (duration > limit) {
         breakLimit[h] += 1;
       }
       if (timeDict[h] === undefined) timeDict[h] = 1;
@@ -390,12 +370,13 @@ const dailyDispense = data => {
 app.post("/dailyDispense", function(req, res) {
   const request = db.request();
   const date = new Date(req.body.date);
+  const {limit} = req.body
   request.query(dateQuery(date), function(err, result) {
     if (err) return next(err);
 
     var data = result.recordset;
 
-    const dailyDispenseData = dailyDispense(data);
+    const dailyDispenseData = dailyDispense(data,limit);
 
     res.send(dailyDispenseData);
   });
@@ -435,7 +416,7 @@ const monthDict = {
   31: 0
 };
 
-const monthlyPicking = data => {
+const monthlyPicking = (data,limit) => {
   dateDict = JSON.parse(JSON.stringify(monthDict));
   breakLimit = JSON.parse(JSON.stringify(monthDict));
   avgDate = JSON.parse(JSON.stringify(monthDict));
@@ -445,7 +426,7 @@ const monthlyPicking = data => {
       const date = new Date(pre.ps_time);
       const { duration } = pre;
       dateDict[date.getDate()]++;
-      if (pre.duration > 50) {
+      if (pre.duration > limit) {
         breakLimit[date.getDate()]++;
       }
       if (avgDate[date.getDate()] === 0) {
@@ -470,18 +451,19 @@ const monthlyPicking = data => {
 app.post("/monthlyPicking", function(req, res) {
   const request = db.request();
   const date = new Date(req.body.date);
+  const {limit} = req.body
   request.query(monthQuery(date), function(err, result) {
     if (err) return next(err);
 
     var data = result.recordset;
 
-    const monthlyPickingData = monthlyPicking(data);
+    const monthlyPickingData = monthlyPicking(data,limit);
 
     res.send(monthlyPickingData);
   });
 });
 
-const monthlyDecocting = data => {
+const monthlyDecocting = (data,limit) => {
   dateDict = JSON.parse(JSON.stringify(monthDict));
   breakLimit = JSON.parse(JSON.stringify(monthDict));
   avgDate = JSON.parse(JSON.stringify(monthDict));
@@ -491,7 +473,7 @@ const monthlyDecocting = data => {
       const date = new Date(pre.ps_time);
       const { duration } = pre;
       dateDict[date.getDate()]++;
-      if (pre.duration > 50) {
+      if (pre.duration > limit) {
         breakLimit[date.getDate()]++;
       }
       if (avgDate[date.getDate()] === 0) {
@@ -516,18 +498,19 @@ const monthlyDecocting = data => {
 app.post("/monthlyDecocting", function(req, res) {
   const request = db.request();
   const date = new Date(req.body.date);
+  const {limit} = req.body
   request.query(monthQuery(date), function(err, result) {
     if (err) return next(err);
 
     var data = result.recordset;
 
-    const monthlyDecoctingData = monthlyDecocting(data);
+    const monthlyDecoctingData = monthlyDecocting(data,limit);
 
     res.send(monthlyDecoctingData);
   });
 });
 
-const monthlyDispense = data => {
+const monthlyDispense = (data,limit) => {
   dateDict = JSON.parse(JSON.stringify(monthDict));
   breakLimit = JSON.parse(JSON.stringify(monthDict));
   avgDate = JSON.parse(JSON.stringify(monthDict));
@@ -537,7 +520,7 @@ const monthlyDispense = data => {
       const date = new Date(pre.ps_time);
       const { duration } = pre;
       dateDict[date.getDate()]++;
-      if (pre.duration > 50) {
+      if (pre.duration > limit) {
         breakLimit[date.getDate()]++;
       }
       if (avgDate[date.getDate()] === 0) {
@@ -562,12 +545,13 @@ const monthlyDispense = data => {
 app.post("/monthlyDispense", function(req, res) {
   const request = db.request();
   const date = new Date(req.body.date);
+  const {limit} = req.body
   request.query(monthQuery(date), function(err, result) {
     if (err) return next(err);
 
     var data = result.recordset;
 
-    const monthlyDispenseData = monthlyDispense(data);
+    const monthlyDispenseData = monthlyDispense(data,limit);
 
     res.send(monthlyDispenseData);
   });
@@ -588,7 +572,7 @@ const threeMonthQuery = date => {
     1} and DATEPART(yy,ps_time)=${m3.getUTCFullYear()} Order by ps_time  ASC;`;
 };
 
-const threeMonthlyPicking = (data, date) => {
+const threeMonthlyPicking = (data, date,limit) => {
   const m1 = moment(date).toDate();
   const m2 = moment(date)
     .subtract(1, "month")
@@ -639,8 +623,9 @@ const threeMonthlyPicking = (data, date) => {
       const m = pre.ps_time.getUTCMonth();
       const y = pre.ps_time.getUTCFullYear();
       const day = pre.ps_time.getUTCDay();
+      console.log(m,y,day);
       weekDict[`${m}_${y}`][day]++;
-      if (pre.duration > 50) {
+      if (pre.duration > limit) {
         breakLimit[`${m}_${y}`][day]++;
       }
       avgThreeMonth[`${m}_${y}`][day].totalTime += pre.duration;
@@ -658,18 +643,19 @@ const threeMonthlyPicking = (data, date) => {
 app.post("/threeMonthlyPicking", function(req, res) {
   const request = db.request();
   const date = new Date(req.body.date);
+  const {limit} = req.body
   request.query(threeMonthQuery(date), function(err, result) {
     if (err) return next(err);
 
     var data = result.recordset;
 
-    const threeMonthlyPickingData = threeMonthlyPicking(data, new Date());
+    const threeMonthlyPickingData = threeMonthlyPicking(data, date,limit);
 
     res.send(threeMonthlyPickingData);
   });
 });
 
-const threeMonthlyDecocting = (data, date) => {
+const threeMonthlyDecocting = (data, date,limit) => {
   const m1 = moment(date).toDate();
   const m2 = moment(date)
     .subtract(1, "month")
@@ -721,7 +707,7 @@ const threeMonthlyDecocting = (data, date) => {
       const y = pre.ps_time.getUTCFullYear();
       const day = pre.ps_time.getUTCDay();
       weekDict[`${m}_${y}`][day]++;
-      if (pre.duration > 50) {
+      if (pre.duration > limit) {
         breakLimit[`${m}_${y}`][day]++;
       }
       avgThreeMonth[`${m}_${y}`][day].totalTime += pre.duration;
@@ -739,18 +725,19 @@ const threeMonthlyDecocting = (data, date) => {
 app.post("/threeMonthlyDecocting", function(req, res) {
   const request = db.request();
   const date = new Date(req.body.date);
+  const {limit} = req.body
   request.query(threeMonthQuery(date), function(err, result) {
     if (err) return next(err);
 
     var data = result.recordset;
 
-    const threeMonthlyDecoctingData = threeMonthlyDecocting(data, new Date());
+    const threeMonthlyDecoctingData = threeMonthlyDecocting(data, date,limit);
 
     res.send(threeMonthlyDecoctingData);
   });
 });
 
-const threeMonthlyDispense = (data, date) => {
+const threeMonthlyDispense = (data, date,limit) => {
   const m1 = moment(date).toDate();
   const m2 = moment(date)
     .subtract(1, "month")
@@ -802,7 +789,7 @@ const threeMonthlyDispense = (data, date) => {
       const y = pre.ps_time.getUTCFullYear();
       const day = pre.ps_time.getUTCDay();
       weekDict[`${m}_${y}`][day]++;
-      if (pre.duration > 50) {
+      if (pre.duration > limit) {
         breakLimit[`${m}_${y}`][day]++;
       }
       avgThreeMonth[`${m}_${y}`][day].totalTime += pre.duration;
@@ -820,12 +807,13 @@ const threeMonthlyDispense = (data, date) => {
 app.post("/threeMonthlyDispense", function(req, res) {
   const request = db.request();
   const date = new Date(req.body.date);
+  const {limit} = req.body
   request.query(threeMonthQuery(date), function(err, result) {
     if (err) return next(err);
 
     var data = result.recordset;
 
-    const threeMonthlyDispenseData = threeMonthlyDispense(data, new Date());
+    const threeMonthlyDispenseData = threeMonthlyDispense(data, date,limit);
 
     res.send(threeMonthlyDispenseData);
   });
@@ -897,7 +885,7 @@ const Scenario = data => {
   };
 
   const dateDict = {};
-  for (let i = 0; i < 24; i++) dateDict[i] = JSON.parse(JSON.stringify(avg));
+  for (let i = 0; i < 32; i++) dateDict[i] = JSON.parse(JSON.stringify(avg));
   data.forEach(pre => {
     if (
       pre.s_id == 10 ||
@@ -908,11 +896,10 @@ const Scenario = data => {
       pre.s_id == 22
     ) {
       const temp = new Date(pre.ps_time);
-      const h = temp.getUTCHours();
+      const d = temp.getUTCDate();
 
-      const m = temp.getUTCMinutes();
-      dateDict[h].totalTime += pre.duration;
-      dateDict[h].num++;
+      dateDict[d].totalTime += pre.duration;
+      dateDict[d].num++;
     }
   });
   return {
