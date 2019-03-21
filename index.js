@@ -1,10 +1,14 @@
 var express = require("express");
 var app = express();
 var db = require("./db");
-
+var bodyParser = require('body-parser');
 var cors = require("cors");
 var moment = require("moment");
 
+app.use(bodyParser.json());
+
+//support parsing of application/x-www-form-urlencoded post data
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: "*",
@@ -185,11 +189,11 @@ const dailyPicking = data => {
 
   data.forEach(pre => {
     if (pre.s_id == 10 || pre.s_id == 20 || pre.s_id == 30) {
-      console.log(
-        pre.ps_time,
-        new Date(pre.ps_time).getMinutes(),
-        new Date(pre.ps_time).getHours() - 7
-      );
+      // console.log(
+      //   pre.ps_time,
+      //   new Date(pre.ps_time).getMinutes(),
+      //   new Date(pre.ps_time).getHours() - 7
+      // );
       const temp = new Date(pre.ps_time);
       const h = temp.getUTCHours();
       const m = temp.getUTCMinutes();
@@ -219,12 +223,14 @@ const dailyPicking = data => {
   return {
     timeDict,
     breakLimit,
-    avgTime
+    avgTime,
+    data
   };
 };
 app.post("/dailyPicking", function(req, res) {
   const request = db.request();
-  const {date} = req.body;
+  console.log(req.body);
+  const date = new Date(req.body.date)
   request.query(dateQuery(date), function(err, result) {
     // if (err) return next(err);
 
