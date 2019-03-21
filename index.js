@@ -401,9 +401,9 @@ const monthDict = {
 };
 
 const monthlyPicking = data => {
-  dateDict = { ...monthDict };
-  breakLimit = { ...monthDict };
-  avgDate = { ...monthDict };
+  dateDict = JSON.parse(JSON.stringify(monthDict));
+  breakLimit = JSON.parse(JSON.stringify(monthDict));
+  avgDate = JSON.parse(JSON.stringify(monthDict));
 
   data.forEach(pre => {
     if (pre.s_id == 10 || pre.s_id == 20 || pre.s_id == 30) {
@@ -446,9 +446,9 @@ app.get("/monthlyPicking", function(req, res) {
 });
 
 const monthlyDecocting = data => {
-  dateDict = { ...monthDict };
-  breakLimit = { ...monthDict };
-  avgDate = { ...monthDict };
+  dateDict = JSON.parse(JSON.stringify(monthDict));
+  breakLimit = JSON.parse(JSON.stringify(monthDict));
+  avgDate = JSON.parse(JSON.stringify(monthDict));
 
   data.forEach(pre => {
     if (pre.s_id == 12) {
@@ -491,9 +491,9 @@ app.get("/monthlyDecocting", function(req, res) {
 });
 
 const monthlyDispense = data => {
-  dateDict = { ...monthDict };
-  breakLimit = { ...monthDict };
-  avgDate = { ...monthDict };
+  dateDict = JSON.parse(JSON.stringify(monthDict));
+  breakLimit = JSON.parse(JSON.stringify(monthDict));
+  avgDate = JSON.parse(JSON.stringify(monthDict));
 
   data.forEach(pre => {
     if (pre.s_id == 14 || pre.s_id == 22) {
@@ -571,13 +571,13 @@ const threeMonthlyPicking = (data, date) => {
     5: 0,
     6: 0
   };
-  weekDict[k1] = { ...weekDayDict };
-  weekDict[k2] = { ...weekDayDict };
-  weekDict[k3] = { ...weekDayDict };
+  weekDict[k1] = JSON.parse(JSON.stringify(weekDayDict));
+  weekDict[k2] = JSON.parse(JSON.stringify(weekDayDict));
+  weekDict[k3] = JSON.parse(JSON.stringify(weekDayDict));
   const breakLimit = {};
-  breakLimit[k1] = { ...weekDayDict };
-  breakLimit[k2] = { ...weekDayDict };
-  breakLimit[k3] = { ...weekDayDict };
+  breakLimit[k1] = JSON.parse(JSON.stringify(weekDayDict));
+  breakLimit[k2] = JSON.parse(JSON.stringify(weekDayDict));
+  breakLimit[k3] = JSON.parse(JSON.stringify(weekDayDict));
   const avg = {
     totalTime: 0,
     num: 0
@@ -592,9 +592,9 @@ const threeMonthlyPicking = (data, date) => {
     6: { ...avg }
   };
   const avgThreeMonth = {};
-  avgThreeMonth[k1] = { ...avgWeekDay };
-  avgThreeMonth[k2] = { ...avgWeekDay };
-  avgThreeMonth[k3] = { ...avgWeekDay };
+  avgThreeMonth[k1] = JSON.parse(JSON.stringify(avgWeekDay));
+  avgThreeMonth[k2] = JSON.parse(JSON.stringify(avgWeekDay));
+  avgThreeMonth[k3] = JSON.parse(JSON.stringify(avgWeekDay));
 
   data.forEach(pre => {
     if (pre.s_id == 10 || pre.s_id == 20 || pre.s_id == 30) {
@@ -651,13 +651,13 @@ const threeMonthlyDecocting = (data, date) => {
     5: 0,
     6: 0
   };
-  weekDict[k1] = { ...weekDayDict };
-  weekDict[k2] = { ...weekDayDict };
-  weekDict[k3] = { ...weekDayDict };
+  weekDict[k1] = JSON.parse(JSON.stringify(weekDayDict));
+  weekDict[k2] = JSON.parse(JSON.stringify(weekDayDict));
+  weekDict[k3] = JSON.parse(JSON.stringify(weekDayDict));
   const breakLimit = {};
-  breakLimit[k1] = { ...weekDayDict };
-  breakLimit[k2] = { ...weekDayDict };
-  breakLimit[k3] = { ...weekDayDict };
+  breakLimit[k1] = JSON.parse(JSON.stringify(weekDayDict));
+  breakLimit[k2] = JSON.parse(JSON.stringify(weekDayDict));
+  breakLimit[k3] = JSON.parse(JSON.stringify(weekDayDict));
   const avg = {
     totalTime: 0,
     num: 0
@@ -672,9 +672,9 @@ const threeMonthlyDecocting = (data, date) => {
     6: { ...avg }
   };
   const avgThreeMonth = {};
-  avgThreeMonth[k1] = { ...avgWeekDay };
-  avgThreeMonth[k2] = { ...avgWeekDay };
-  avgThreeMonth[k3] = { ...avgWeekDay };
+  avgThreeMonth[k1] = JSON.parse(JSON.stringify(avgWeekDay));
+  avgThreeMonth[k2] = JSON.parse(JSON.stringify(avgWeekDay));
+  avgThreeMonth[k3] = JSON.parse(JSON.stringify(avgWeekDay));
 
   data.forEach(pre => {
     if (pre.s_id == 12) {
@@ -731,13 +731,13 @@ const threeMonthlyDispense = (data, date) => {
     5: 0,
     6: 0
   };
-  weekDict[k1] = { ...weekDayDict };
-  weekDict[k2] = { ...weekDayDict };
-  weekDict[k3] = { ...weekDayDict };
+  weekDict[k1] = JSON.parse(JSON.stringify(weekDayDict));
+  weekDict[k2] = JSON.parse(JSON.stringify(weekDayDict));
+  weekDict[k3] = JSON.parse(JSON.stringify(weekDayDict));
   const breakLimit = {};
-  breakLimit[k1] = { ...weekDayDict };
-  breakLimit[k2] = { ...weekDayDict };
-  breakLimit[k3] = { ...weekDayDict };
+  breakLimit[k1] = JSON.parse(JSON.stringify(weekDayDict));
+  breakLimit[k2] = JSON.parse(JSON.stringify(weekDayDict));
+  breakLimit[k3] = JSON.parse(JSON.stringify(weekDayDict));
   const avg = {
     totalTime: 0,
     num: 0
@@ -752,9 +752,9 @@ const threeMonthlyDispense = (data, date) => {
     6: { ...avg }
   };
   const avgThreeMonth = {};
-  avgThreeMonth[k1] = { ...avgWeekDay };
-  avgThreeMonth[k2] = { ...avgWeekDay };
-  avgThreeMonth[k3] = { ...avgWeekDay };
+  avgThreeMonth[k1] = JSON.parse(JSON.stringify(avgWeekDay));
+  avgThreeMonth[k2] = JSON.parse(JSON.stringify(avgWeekDay));
+  avgThreeMonth[k3] = JSON.parse(JSON.stringify(avgWeekDay));
 
   data.forEach(pre => {
     if (pre.s_id == 14 || pre.s_id == 22) {
@@ -802,7 +802,7 @@ const overall = data => {
     dispense: { ...avg }
   };
   const dateDict = {};
-  for (let i = 0; i < 23; i++) dateDict[i] = { ...type };
+  for (let i = 0; i < 23; i++) dateDict[i] = JSON.parse(JSON.stringify(type));
   data.forEach(pre => {
     if (
       pre.s_id == 10 ||
@@ -814,7 +814,7 @@ const overall = data => {
     ) {
       const temp = new Date(pre.ps_time);
       const h = temp.getUTCHours();
-      a.add(h)
+      
       const m = temp.getUTCMinutes();
       if ([10, 20, 30].includes(pre.s_id)) {
         dateDict[h].pick.totalTime += pre.duration;
@@ -828,7 +828,6 @@ const overall = data => {
       }
     }
   });
-  console.log(a);
   return {
     dateDict
   };
