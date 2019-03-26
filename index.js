@@ -978,6 +978,7 @@ const Scenario = data => {
 
   const dateDict = {};
   for (let i = 1; i < 32; i++) dateDict[i] = JSON.parse(JSON.stringify(avg));
+<<<<<<< HEAD
   data.forEach(pre => {
     if (
       pre.s_id == 10 ||
@@ -1007,6 +1008,8 @@ const Scenario = data => {
 
   const dateDict = {};
   for (let i = 0; i < 32; i++) dateDict[i] = JSON.parse(JSON.stringify(avg));
+=======
+>>>>>>> cea063e30cc403b7e8f693ea19b10bd990d9ddae
   data.forEach(pre => {
     if (
       pre.s_id == 10 ||
