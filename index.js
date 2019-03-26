@@ -971,35 +971,7 @@ app.post("/overallProcess", function(req, res) {
   });
 });
 
-const Scenario = data => {
-  const a = new Set();
-  const avg = {
-    totalTime: 0,
-    num: 0
-  };
 
-  const dateDict = {};
-  for (let i = 1; i < 32; i++) dateDict[i] = JSON.parse(JSON.stringify(avg));
-  data.forEach(pre => {
-    if (
-      pre.s_id == 10 ||
-      pre.s_id == 20 ||
-      pre.s_id == 30 ||
-      pre.s_id == 12 ||
-      pre.s_id == 14 ||
-      pre.s_id == 22
-    ) {
-      const temp = new Date(pre.ps_time);
-      const d = temp.getUTCDate();
-
-      dateDict[d].totalTime += pre.duration;
-      dateDict[d].num++;
-    }
-  });
-  return {
-    dateDict
-  };
-};
 const Scenario = data => {
   const a = new Set();
   const avg = {
