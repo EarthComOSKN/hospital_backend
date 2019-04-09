@@ -29,7 +29,7 @@ const dateQuery = date => {
   else
     return `select P.pre_id,P.s_id,P.ps_time,P.duration,P.numberOfOper,O.op_time,O.o_id,OP.o_type,OP.parttime from dbo.psrel P LEFT JOIN dbo.oprel O ON P.pre_id = O.pre_id and P.s_id = O.s_id LEFT JOIN dbo.operator OP ON O.o_id = OP.o_id WHERE CONVERT(varchar(11),ps_time)=CONVERT(varchar(11),'${moment(
       new Date(date)
-    ).format("MMM  DD YYYY")}') Order by ps_time  DESC;`;
+    ).format("MMM  D YYYY")}') Order by ps_time  DESC;`;
 };
 
 const limitQuery = () => {
@@ -242,7 +242,7 @@ app.get("/realtime", function(req, res) {
     // // console.log(realTimeData);
     res.send(realTimeData);
   });
-});
+}); 
 
 const dailyPicking = (data, limit) => {
   const timeDict = { ...Time };
@@ -396,6 +396,10 @@ const dailyDecocting = (data, limit) => {
 app.post("/dailyDecocting", function(req, res) {
   const request = db.request();
   const date = new Date(req.body.date);
+  console.log(dateQuery(date));
+  console.log(moment(
+    new Date("date")
+  ).format("MMM DD YYYY"));
   const { limit } = req.body;
   // console.log(dateQuery(date));
   request.query(dateQuery(date), function(err, result) {
