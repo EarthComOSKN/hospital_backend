@@ -317,6 +317,7 @@ app.post("/dailyPicking", function(req, res) {
     // if (err) return next(err);
 
     var data = result.recordset;
+    data = data.filter(x => x.duration < 300)
     // console.log(data);
     const dailyPickingData = dailyPicking(data, limit);
     // // console.log(realTimeData);
@@ -407,6 +408,7 @@ app.post("/dailyDecocting", function(req, res) {
 
     var data = result.recordset;
     // console.log(data);
+    data = data.filter(x => x.duration < 300)
     const dailyDecoctingData = dailyDecocting(data, limit);
     // // console.log(realTimeData);
     // res.send(realTimeData);
@@ -474,7 +476,7 @@ app.post("/dailyDispense", function(req, res) {
     if (err) return next(err);
 
     var data = result.recordset;
-
+    data = data.filter(x => x.duration < 300)
     const dailyDispenseData = dailyDispense(data, limit);
 
     res.send(dailyDispenseData);
@@ -555,7 +557,7 @@ app.post("/monthlyPicking", function(req, res) {
     if (err) return next(err);
 
     var data = result.recordset;
-
+    data = data.filter(x => x.duration < 300)
     const monthlyPickingData = monthlyPicking(data, limit);
 
     res.send(monthlyPickingData);
@@ -602,7 +604,7 @@ app.post("/monthlyDecocting", function(req, res) {
     if (err) return next(err);
 
     var data = result.recordset;
-
+    data = data.filter(x => x.duration < 300)
     const monthlyDecoctingData = monthlyDecocting(data, limit);
 
     res.send(monthlyDecoctingData);
@@ -649,7 +651,7 @@ app.post("/monthlyDispense", function(req, res) {
     if (err) return next(err);
 
     var data = result.recordset;
-
+    data = data.filter(x => x.duration < 300)
     const monthlyDispenseData = monthlyDispense(data, limit);
 
     res.send(monthlyDispenseData);
@@ -747,7 +749,7 @@ app.post("/threeMonthlyPicking", function(req, res) {
     if (err) return next(err);
 
     var data = result.recordset;
-
+    data = data.filter(x => x.duration < 300)
     const threeMonthlyPickingData = threeMonthlyPicking(data, date, limit);
 
     res.send(threeMonthlyPickingData);
@@ -829,7 +831,7 @@ app.post("/threeMonthlyDecocting", function(req, res) {
     if (err) return next(err);
 
     var data = result.recordset;
-
+    data = data.filter(x => x.duration < 300)
     const threeMonthlyDecoctingData = threeMonthlyDecocting(data, date, limit);
 
     res.send(threeMonthlyDecoctingData);
@@ -911,7 +913,7 @@ app.post("/threeMonthlyDispense", function(req, res) {
     if (err) return next(err);
 
     var data = result.recordset;
-
+    data = data.filter(x => x.duration < 300)
     const threeMonthlyDispenseData = threeMonthlyDispense(data, date, limit);
 
     res.send(threeMonthlyDispenseData);
@@ -932,14 +934,7 @@ const overall = data => {
   const dateDict = {};
   for (let i = 0; i < 24; i++) dateDict[i] = JSON.parse(JSON.stringify(type));
   data.forEach(pre => {
-    if (
-      pre.s_id == 10 ||
-      pre.s_id == 20 ||
-      pre.s_id == 30 ||
-      pre.s_id == 12 ||
-      pre.s_id == 14 ||
-      pre.s_id == 22
-    ) {
+    if ([10, 20, 30,12,14,22].includes(pre.s_id)    ) {
       const temp = new Date(pre.ps_time);
       const h = temp.getUTCHours();
 
@@ -969,6 +964,7 @@ app.post("/overallProcess", function(req, res) {
 
     var data = result.recordset;
     // console.log(data);
+    data = data.filter(x => x.duration < 300)
     const overallData = overall(data);
     // // console.log(realTimeData);
     // res.send(realTimeData);
@@ -983,7 +979,7 @@ const Scenario = data => {
     totalTime: 0,
     num: 0
   };
-
+  console.log('se');
   const dateDict = {};
   for (let i = 0; i < 32; i++) dateDict[i] = JSON.parse(JSON.stringify(avg));
   data.forEach(pre => {
@@ -995,6 +991,7 @@ const Scenario = data => {
       pre.s_id == 14 ||
       pre.s_id == 22
     ) {
+      console.log(pre.ps_time);
       const temp = new Date(pre.ps_time);
       const d = temp.getUTCDate();
 
@@ -1010,11 +1007,12 @@ const Scenario = data => {
 app.post("/scenario", function(req, res) {
   const request = db.request();
   const date = new Date(req.body.date);
+  console.log('earth');
   request.query(monthQuery(date), function(err, result) {
     if (err) return next(err);
 
     var data = result.recordset;
-
+    data = data.filter(x => x.duration < 300)
     const ScenarioData = Scenario(data);
 
     res.send(ScenarioData);
