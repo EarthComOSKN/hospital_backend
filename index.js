@@ -333,7 +333,7 @@ const dailyDecocting = (data, limit) => {
 
   data.forEach(pre => {
     if ([13].includes(pre.s_id)) {
-      console.log(pre);
+      // console.log(pre);
       const temp = new Date(pre.ps_time);
       const h = temp.getUTCHours();
       const m = temp.getUTCMinutes();
@@ -348,11 +348,11 @@ const dailyDecocting = (data, limit) => {
     }
     if (pre.s_id == 12) {
       // console.log(pre);
-      console.log(
-        pre.ps_time,
-        new Date(pre.ps_time).getMinutes(),
-        new Date(pre.ps_time).getHours() - 7
-      );
+      // console.log(
+      //   pre.ps_time,
+      //   new Date(pre.ps_time).getMinutes(),
+      //   new Date(pre.ps_time).getHours() - 7
+      // );
       const temp = new Date(pre.ps_time);
       const h = temp.getUTCHours();
       const m = temp.getUTCMinutes();
@@ -367,7 +367,7 @@ const dailyDecocting = (data, limit) => {
         avgTime[h].num += 1;
       }
       if (duration > limit) {
-        console.log("earth", duration);
+        console.log("earth", duration,limit);
         breakLimit[h] += 1;
       }
       if (timeDict[h] === undefined) timeDict[h] = 1;
@@ -400,6 +400,7 @@ app.post("/dailyDecocting", function(req, res) {
     new Date("date")
   ).format("MMM DD YYYY"));
   const { limit } = req.body;
+  console.log(limit);
   // console.log(dateQuery(date));
   request.query(dateQuery(date), function(err, result) {
     // if (err) return next(err);
