@@ -44,7 +44,8 @@ const exportStat = data => {
     min: math.min(data),
     max: math.max(data),
     avg: math.mean(data),
-    per80: percentile(80,data)
+    per80: percentile(80,data),
+    data: data
   }
 }
 
@@ -54,13 +55,13 @@ const limitCal = data => {
   const dispense = [];
 
   data.forEach((pre) => {
-    if([10,20,30].includes(pre.s_id) && pre.duration < 480){
+    if([10,20,30].includes(pre.s_id) ){
       pick.push(pre.duration)
     }
-    if([12].includes(pre.s_id) && pre.duration < 480){
+    if([12].includes(pre.s_id) ){
       decoct.push(pre.duration)
     }
-    if([14,22].includes(pre.s_id) && pre.duration < 480){
+    if([14,22].includes(pre.s_id) ){
       dispense.push(pre.duration)
     }
 
@@ -69,14 +70,14 @@ const limitCal = data => {
   const result = {
     pick: exportStat(pick),
     decoct: exportStat(decoct),
-    dispense: exportStat(dispense)
+    dispense: exportStat(dispense),
   }
   return result
 }
 
 app.get("/limit", function(req, res) {
   const request = db.request();
-
+  console.log(limitQuery());
   request.query(limitQuery(), function(err, result) {
     if (err) return next(err);
 
